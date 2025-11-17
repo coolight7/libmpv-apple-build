@@ -40,4 +40,4 @@ CONF=1 "${MY_CMAKE_EXE_DIR}/cmake" -S.. -B. \
 "${MY_NINJA_EXE_DIR}/ninja" -C .
 DESTDIR="$prefix_dir" "${MY_NINJA_EXE_DIR}/ninja" -C . install
 
-sed '/^Libs:/ s|$| -liconv |' "$prefix_dir/usr/lib/pkgconfig/libxml2.pc" -i
+sed '/^Libs:/ s|$| -liconv |' "$prefix_dir/usr/lib/pkgconfig/libxml-2.0.pc" -i

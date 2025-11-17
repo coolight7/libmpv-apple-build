@@ -48,7 +48,7 @@ export PKG_CONFIG_LIBDIR="$prefix_dir/lib/pkgconfig:/usr/local/lib/pkgconfig:/us
 # c++std: libjxl、shaderc
 # 链接c++标准库时，如果需要静态链接
 # --extra-ldflags="-L$prefix_dir/lib -lm -nostdlib++ -lc++_static -lc++abi"
-# [vulkan] 会增加 5mb 左右的大小，但可能对ffmpeg用处不大
+# [vulkan] 会增加 5mb 左右的大小
 ../configure \
 	--target-os=linux --arch="x86_64" --cpu="x86-64" \
 	--nm="$NM" --strip=strip --ranlib="$RANLIB" --ar="$AR" --cc="$CC" --cxx="$CXX" \
@@ -68,9 +68,9 @@ export PKG_CONFIG_LIBDIR="$prefix_dir/lib/pkgconfig:/usr/local/lib/pkgconfig:/us
 	--enable-static \
 	--enable-stripping \
 	--enable-runtime-cpudetect \
-	--enable-small \
 	--enable-pic \
-	--enable-lto=none \
+	--enable-lto \
+	--enable-hardcoded-tables \
 	--enable-optimizations \
 	${asmflags} \
 	--enable-pthreads \

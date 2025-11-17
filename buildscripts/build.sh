@@ -54,9 +54,9 @@ loadarch () {
 	export build_home_dir="$PWD/../"
 	export prefix_dir="$PWD/prefix/$prefix_name"
 	export source_dir="$PWD/deps/"
-	export CFLAGS="-fPIC -ffunction-sections -fdata-sections "
-	export CXXFLAGS="-fPIC -ffunction-sections -fdata-sections "
-	export LDFLAGS="-Wl,-O2 -Wl,--gc-sections"
+	export CFLAGS="-fPIC -ffunction-sections -fdata-sections -O3 -flto"
+	export CXXFLAGS="-fPIC -ffunction-sections -fdata-sections -O3 -flto"
+	export LDFLAGS="-Wl,-O3 -Wl,--gc-sections -flto"
 	export CC=$cc_triple-gcc
 	export CXX=$cc_triple-g++
 	if [[ "$1" == arm* ]]; then
@@ -92,16 +92,8 @@ setup_prefix () {
 buildtype = 'release'
 default_library = 'static'
 wrap_mode = 'nodownload'
-c_args = [
-	'-fPIC',
-	'-ffunction-sections',
-	'-fdata-sections '
-]
-cxx_args = [
-	'-fPIC',
-	'-ffunction-sections',
-	'-fdata-sections '
-]
+c_args = '$CFLAGS'
+cpp_args = '$CXXFLAGS'
 
 [binaries]
 c = '$CC'
