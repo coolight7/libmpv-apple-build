@@ -1,5 +1,5 @@
-# libmpv-linux-build
-- 由 libmpv-android-build 复制修改而来
+# libmpv-apple-build
+- 由 libmpv-linux-build 复制修改而来
 
 ## 编译
 - docker 拉取镜像 `ubuntu:20.04`，创建容器，进入容器

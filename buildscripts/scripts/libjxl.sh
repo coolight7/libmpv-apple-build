@@ -24,8 +24,10 @@ cpu=
 
 CONF=1 "${MY_CMAKE_EXE_DIR}/cmake" -S.. -B. \
     -G Ninja \
-    -DCMAKE_SYSTEM_NAME=Linux \
+    -DCMAKE_SYSTEM_NAME=${current_target_os} \
     -DCMAKE_SYSTEM_PROCESSOR=${cpu} \
+    -DCMAKE_OSX_SYSROOT=${sysroot_dir} \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_DEPLOYMENT_TARGET} \
     -DCMAKE_AR="$AR" \
     -DCMAKE_RANLIB="$RANLIB" \
     -DCMAKE_C_FLAGS=-fPIC \
@@ -58,6 +60,6 @@ CONF=1 "${MY_CMAKE_EXE_DIR}/cmake" -S.. -B. \
 "${MY_NINJA_EXE_DIR}/ninja" -C .
 DESTDIR="$prefix_dir" "${MY_NINJA_EXE_DIR}/ninja" -C . install
 
-# sed -i '/^Libs: -L${libdir} -ljxl / s|-lc++ |-lc++_static -lc++abi|' "$prefix_dir/lib/pkgconfig/libjxl.pc"
-# sed -i '/^Libs.private:/ s|-lc++ |-lc++_static -lc++abi|' "$prefix_dir/lib/pkgconfig/libjxl_cms.pc"
-# sed '/^Libs.private:/ s|$| -lc++_static -lc++abi|' "$prefix_dir/lib/pkgconfig/libjxl_threads.pc" -i
+# gsed -i '/^Libs: -L${libdir} -ljxl / s|-lc++ |-lc++_static -lc++abi|' "$prefix_dir/lib/pkgconfig/libjxl.pc"
+# gsed -i '/^Libs.private:/ s|-lc++ |-lc++_static -lc++abi|' "$prefix_dir/lib/pkgconfig/libjxl_cms.pc"
+# gsed '/^Libs.private:/ s|$| -lc++_static -lc++abi|' "$prefix_dir/lib/pkgconfig/libjxl_threads.pc" -i ''

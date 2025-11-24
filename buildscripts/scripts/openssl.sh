@@ -15,10 +15,17 @@ fi
 mkdir -p _build$cpu_suffix
 cd _build$cpu_suffix
 
-cpu=linux-arm
-[[ "$cpu_triple" == "aarch64"* ]] && cpu=linux-arm64
-[[ "$cpu_triple" == "x86_64"* ]] && cpu=linux-x86_64
-[[ "$cpu_triple" == "i686"* ]] && cpu=linux-x86
+if [[ "$current_target_os" == "iOS" ]]; then
+    cpu=ios64-arm
+    [[ "$cpu_triple" == "aarch64"* ]] && cpu=ios64-cross
+    [[ "$cpu_triple" == "x86_64"* ]] && cpu=ios64-x86_64
+    [[ "$cpu_triple" == "i686"* ]] && cpu=ios64-x86
+else
+    cpu=darwin64-arm
+    [[ "$cpu_triple" == "aarch64"* ]] && cpu=darwin64-arm64
+    [[ "$cpu_triple" == "x86_64"* ]] && cpu=darwin64-x86_64
+    [[ "$cpu_triple" == "i686"* ]] && cpu=darwin64-x86
+fi
 
 CFLAGS="$CFLAGS -fPIC -I$prefix_dir/include -I$prefix_dir/include/brotli" CXXFLAGS="$CXXFLAGS -fPIC -I$prefix_dir/include -I$prefix_dir/include/brotli" LDFLAGS="$LDFLAGS -L$prefix_dir/lib -lz -lzstd -lbrotlicommon -lbrotlidec -lbrotlienc" CONF=1 ../Configure \
     --libdir=lib \

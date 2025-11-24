@@ -22,8 +22,8 @@ pkgconfig_path=$lib_path/pkgconfig/
 
 reset () {
     cp $pkgconfig_path/$1 $back_path/
-    sed -i '/^Libs: / s/^Libs:.*/Libs: -L${libdir} -lmediaxx/' $pkgconfig_path/$1
-    sed -i '/^Requires\.private:/d' $pkgconfig_path/$1
+    gsed -i '/^Libs: / s/^Libs:.*/Libs: -L${libdir} -lmediaxx/' $pkgconfig_path/$1
+    gsed -i '/^Requires\.private:/d' $pkgconfig_path/$1
 }
 
 reset 'libavcodec.pc'

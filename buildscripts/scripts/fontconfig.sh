@@ -14,19 +14,21 @@ else
 	exit 255
 fi
 
-sed -i "s/both_libraries/library/g" ./src/meson.build
+gsed -i "s/both_libraries/library/g" ./src/meson.build
 
 # 阻止 ./autogen.sh 内直接运行 configure
 export NOCONFIGURE=no-config
 # -mno-ieee-fp is not supported by clang
-sed s/\-mno\-ieee\-fp// -i configure.ac
+gsed s/\-mno\-ieee\-fp// -i configure.ac
 
 unset CC CXX # meson wants these unset
 
 # 需要安装 apt install -y autopoint gperf gettext
-CFLAGS="-fPIC -D_GNU_SOURCE" CXXFLAGS="-fPIC -D_GNU_SOURCE" meson setup $build --cross-file "$prefix_dir"/crossfile.txt -Ddefault_library=static \
+CFLAGS="-fPIC -D_GNU_SOURCE" CXXFLAGS="-fPIC -D_GNU_SOURCE" meson setup $build --cross-file "$prefix_dir"/crossfile.txt \
         --libdir=lib \
+        --prefix=/usr/local \
         --buildtype=release \
+        -Ddefault_library=static \
         -Ddoc=disabled \
         -Dtests=disabled \
         -Dtools=disabled 

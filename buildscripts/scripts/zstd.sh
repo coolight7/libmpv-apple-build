@@ -17,8 +17,10 @@ fi
 unset CC CXX # meson wants these unset
 
 meson setup $build ./build/meson --cross-file "$prefix_dir"/crossfile.txt \
-    --buildtype=release \
-    --default-library=static \
+	--default-library=static \
+	--libdir=lib \
+	--prefix=/usr/local \
+	--buildtype=release \
     -Dlegacy_level=0 \
     -Ddebug_level=0 \
     -Dbin_programs=false \

@@ -17,33 +17,46 @@ fi
 unset CC CXX # meson wants these unset
 
 # 清理标准库依赖
-sed -i '/^Libs/ s|-lstdc++| |' $prefix_dir/lib/pkgconfig/*.pc
-sed -i '/^Libs/ s|-lc++_static| |' $prefix_dir/lib/pkgconfig/*.pc
-sed -i '/^Libs/ s|-lc++abi| |' $prefix_dir/lib/pkgconfig/*.pc
-sed -i '/^Libs/ s|-lc++_shared| |' $prefix_dir/lib/pkgconfig/*.pc
-sed -i '/^Libs/ s|-lc++| |' $prefix_dir/lib/pkgconfig/*.pc
+gsed -i '/^Libs/ s|-lstdc++| |' $prefix_dir/lib/pkgconfig/*.pc
+gsed -i '/^Libs/ s|-lc++_static| |' $prefix_dir/lib/pkgconfig/*.pc
+gsed -i '/^Libs/ s|-lc++abi| |' $prefix_dir/lib/pkgconfig/*.pc
+gsed -i '/^Libs/ s|-lc++_shared| |' $prefix_dir/lib/pkgconfig/*.pc
+gsed -i '/^Libs/ s|-lc++| |' $prefix_dir/lib/pkgconfig/*.pc
 
 # 可用于限制导出的符号
 # CFLAGS、CXXFLAGS 中添加  -fvisibility=hidden
 # -Wl,--undefined-version,--version-script=$mpv_EXPORT_IDS
 mpv_EXPORT_IDS=$build_home_dir/buildscripts/mpv-export.lds
 
-export PKG_CONFIG_SYSROOT_DIR="$prefix_dir"
-export PKG_CONFIG_LIBDIR="$prefix_dir/usr/lib/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/lib/x86_64-linux-gnu/pkgconfig:/usr/local/share/pkgconfig:/usr/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig"
+export C_INCLUDE_PATH=$prefix_dir/include:$C_INCLUDE_PATH
+export CPLUS_INCLUDE_PATH=$sysroot_dir/usr/include/c++/v1:$prefix_dir/include:$CPLUS_INCLUDE_PATH
 
-[ -f /home/coolight/program/media/libmpv-linux-build/buildscripts/prefix/x86_64/usr/local/share/wayland-protocols ] && ln -s /usr/local/share/wayland-protocols /home/coolight/program/media/libmpv-linux-build/buildscripts/prefix/x86_64/usr/local/share/wayland-protocols
+target_os=
+target_options=
+if [[ "$current_target_os" == "iOS" ]]; then
+	target_os=arm64-apple-ios12.1
+	target_options="-Daudiounit=enabled -Davfoundation=disabled -Dcocoa=disabled -Dcoreaudio=disabled -Dvideotoolbox-gl=disabled -Dvideotoolbox-pl=disabled -Dios-gl=enabled "
+else 
+	target_os=arm64-apple-macos11.0
+	target_options="-Dcoreaudio=enabled -Davfoundation=enabled -Dcocoa=disabled -Dgl-cocoa=disabled -Dvideotoolbox-gl=disabled -Dvideotoolbox-pl=disabled -Dmacos-cocoa-cb=disabled -Dswift-build=disabled"
+fi
 
 # c++std: libjxl、shaderc
 # 由 mediaxx 静态链接标准库并导出符号，libmpv 动态链接使用
-LDFLAGS="$LDFLAGS -L$prefix_dir/lib/ $default_ld_cxx_stdlib -lm" meson setup $build \
+LDFLAGS="$LDFLAGS -L$prefix_dir/lib/ $default_ld_cxx_stdlib -lm" CFLAGS="$CFLAGS -F$sysroot_dir/System/Library/Frameworks/ -I$sysroot_dir/usr/include -I$prefix_dir/include" CXXFLAGS="$CXXFLAGS -F$sysroot_dir/System/Library/Frameworks/ -I$sysroot_dir/usr/include -I$prefix_dir/include" meson setup $build \
 	--cross-file "$prefix_dir/crossfile.txt" \
 	--default-library static \
+	--libdir=lib \
+	--prefix=/usr/local \
     -Dbuildtype=release \
     -Db_lto=true \
 	-Db_lto_mode=default \
 	-Db_ndebug=true \
-	-Dc_args="$CFLAGS -I$prefix_dir/include -I/usr/include/pipewire-0.3/ -I/usr/include/spa-0.2/" \
-	-Dcpp_args="$CXXFLAGS -I$prefix_dir/include -I/usr/include/pipewire-0.3/ -I/usr/include/spa-0.2/" \
+	-Dc_args="$CFLAGS -F$sysroot_dir/System/Library/Frameworks/ -I$sysroot_dir/usr/include -I$prefix_dir/include " \
+	-Dcpp_args="$CXXFLAGS -F$sysroot_dir/System/Library/Frameworks/ -I$sysroot_dir/usr/include -I$prefix_dir/include " \
+	-Dobjc_args="-F$sysroot_dir/System/Library/Frameworks/ -I$sysroot_dir/usr/include -I$prefix_dir/include" \
+	-Dobjcpp_args="-F$sysroot_dir/System/Library/Frameworks/ -I$sysroot_dir/usr/include -I$prefix_dir/include" \
+	-Dswift-flags="-target $target_os -sdk $sysroot_dir -sysroot $sysroot_dir -F$sysroot_dir/System/Library/Frameworks/ -I$sysroot_dir/usr/include -I$prefix_dir/include" \
 	-Ddebug=false \
 	-Doptimization=3 \
 	-Dlibmpv=true \
@@ -64,22 +77,23 @@ LDFLAGS="$LDFLAGS -L$prefix_dir/lib/ $default_ld_cxx_stdlib -lm" meson setup $bu
 	-Dvapoursynth=disabled \
 	-Duchardet=disabled \
 	\
-	-Diconv=enabled \
+	-Diconv=disabled \
 	-Dlibarchive=enabled \
 	-Drubberband=enabled \
 	-Dlcms2=enabled \
 	\
-	-Dalsa=enabled \
-	-Dpipewire=enabled \
-	-Dpulse=enabled \
+	-Dalsa=disabled \
+	-Dpipewire=disabled \
+	-Dpulse=disabled \
 	-Dsdl2-audio=disabled \
     -Dopensles=disabled \
 	\
-	-Dx11=enabled \
-	-Dwayland=enabled \
-	-Degl=enabled \
 	-Dplain-gl=enabled \
 	-Dgl=enabled \
+	${target_options} \
+	-Dx11=disabled \
+	-Dwayland=disabled \
+	-Degl=disabled \
 	-Dvaapi-drm=disabled \
 	-Dvulkan=disabled \
 	-Dsdl2-video=disabled \

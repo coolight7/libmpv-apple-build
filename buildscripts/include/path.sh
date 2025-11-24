@@ -5,8 +5,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 os=linux
 export os
 
-[ -z "$cores" ] && cores=$(grep -c ^processor /proc/cpuinfo)
-cores=${cores:-4}
+cores=6
 
 # configure pkg-config paths if inside buildscripts
 # 搜索重定向根目录，因此 库写入 .pc 文件时路径应该保持原本的 /lib 一类的默认目录，不写入实际路径
@@ -22,7 +21,7 @@ if [ -n "$cpu_triple" ]; then
 	unset PKG_CONFIG_PATH
 fi
 
-export MY_CMAKE_EXE_DIR=/usr/local/bin/
-export MY_NINJA_EXE_DIR=/usr/bin/
+export MY_CMAKE_EXE_DIR=/opt/homebrew/bin/
+export MY_NINJA_EXE_DIR=/opt/homebrew/bin/
 
 export PATH="$MY_CMAKE_EXE_DIR:$PATH"

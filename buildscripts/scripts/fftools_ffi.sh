@@ -17,6 +17,10 @@ fi
 unset CC CXX # meson wants these unset
 
 meson setup $build --cross-file "$prefix_dir"/crossfile.txt \
+	--libdir=lib \
+	--prefix=/usr/local \
+	--buildtype=release \
+	-Ddefault_library=static \
 
 
 "${MY_NINJA_EXE_DIR}/ninja" -C $build -j$cores

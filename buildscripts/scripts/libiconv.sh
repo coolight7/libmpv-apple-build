@@ -25,7 +25,14 @@ CONF=1 ../configure \
     --enable-static \
 	--enable-pic \
     --disable-nls \
+	--disable-rpath \
     --enable-extra-encodings \
+	ac_cv_func_fprintf=yes \
+	ac_cv_func_fputc=yes \
+	ac_cv_func_fputs=yes \
+	ac_cv_func_fwrite=yes \
+	ac_cv_func_printf=yes \
+	ac_cv_func_vfprintf=yes
 
 make -j$cores
 make DESTDIR="$prefix_dir" install

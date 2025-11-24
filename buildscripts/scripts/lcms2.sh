@@ -17,13 +17,15 @@ fi
 # 阻止 ./autogen.sh 内直接运行 configure
 export NOCONFIGURE=no-config
 # -mno-ieee-fp is not supported by clang
-sed s/\-mno\-ieee\-fp// -i configure.ac
+gsed s/\-mno\-ieee\-fp// -i configure.ac
 
 unset CC CXX # meson wants these unset
 
 meson setup $build --cross-file "$prefix_dir"/crossfile.txt \
-    --buildtype=release \
-    --default-library=static \
+	--default-library=static \
+	--libdir=lib \
+	--prefix=/usr/local \
+	--buildtype=release \
     -Dfastfloat=true \
     -Dthreaded=true \
 

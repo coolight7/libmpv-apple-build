@@ -21,6 +21,10 @@ unset CC CXX # meson wants these unset
 mkdir $build
 
 meson setup $build --cross-file "$prefix_dir"/crossfile.txt \
+	--default-library=static \
+	--libdir=lib \
+	--prefix=/usr/local \
+	--buildtype=release \
 
 meson compile -C $build libx264
 DESTDIR="$prefix_dir" meson install -C $build

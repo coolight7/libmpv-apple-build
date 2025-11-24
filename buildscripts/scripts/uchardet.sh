@@ -25,8 +25,10 @@ cpu=
 
 CONF=1 "${MY_CMAKE_EXE_DIR}/cmake" -S.. -B. \
     -G Ninja \
-    -DCMAKE_SYSTEM_NAME=Linux \
+    -DCMAKE_SYSTEM_NAME=${current_target_os} \
     -DCMAKE_SYSTEM_PROCESSOR=${cpu} \
+    -DCMAKE_OSX_SYSROOT=${sysroot_dir} \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_DEPLOYMENT_TARGET} \
     -DCMAKE_FIND_ROOT_PATH=${prefix_dir} \
     -DCMAKE_C_FLAGS=-fPIC -DCMAKE_CXX_FLAGS=-fPIC \
     -DCMAKE_BUILD_TYPE=Release \
@@ -41,4 +43,4 @@ CONF=1 "${MY_CMAKE_EXE_DIR}/cmake" -S.. -B. \
 "${MY_NINJA_EXE_DIR}/ninja" -C .
 DESTDIR="$prefix_dir" "${MY_NINJA_EXE_DIR}/ninja" -C . install
 
-# sed -i '/^Libs.private:/ s|-lstdc++|-lc++_static -lc++abi|' "$prefix_dir/lib/pkgconfig/uchardet.pc"
+# gsed -i '/^Libs.private:/ s|-lstdc++|-lc++_static -lc++abi|' "$prefix_dir/lib/pkgconfig/uchardet.pc"

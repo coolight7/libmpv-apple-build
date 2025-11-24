@@ -36,8 +36,10 @@ cpu=
 # 可执行文件 ninja 可能不同，可以在 PATH 中配置提高优先级 $MY_CMAKE_EXE_DIR/（已在 ../../include/path.sh 中）
 CONF=1 "${MY_CMAKE_EXE_DIR}/cmake" -S.. -B. \
     -G Ninja \
-    -DCMAKE_SYSTEM_NAME=Linux \
+    -DCMAKE_SYSTEM_NAME=${current_target_os} \
     -DCMAKE_SYSTEM_PROCESSOR=${cpu} \
+    -DCMAKE_OSX_SYSROOT=${sysroot_dir} \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_DEPLOYMENT_TARGET} \
     -DCMAKE_FIND_ROOT_PATH=${prefix_dir} \
     -DCMAKE_C_FLAGS=-fPIC -DCMAKE_CXX_FLAGS=-fPIC \
     -DCMAKE_BUILD_TYPE=Release \

@@ -1,4 +1,4 @@
-name: Build libmpv-linux
+name: Build libmpv-apple
 
 on:
   push:

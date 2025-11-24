@@ -1,7 +1,0 @@
-libva.so.2
-libva-drm.so.2
-libva-x11.so.2
-libva-wayland.so.2
-libvdpau.so.1
-libpipewire-0.3.so.0
-libXpresent.so.1

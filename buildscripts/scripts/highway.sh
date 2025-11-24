@@ -20,8 +20,10 @@ unset CC CXX # meson wants these unset
 # apt install libgtest-dev
 # cflags 中定义 HWY_TEST_STANDALONE=1 并删除 BUILD 文件中每一处 `gtest_main`
 CFLAGS="-fPIC -DHWY_TEST_STANDALONE=1" CXXFLAGS=-fPIC meson setup $build --cross-file "$prefix_dir/crossfile.txt" \
-    --buildtype=release \
-    --default-library=static \
+	--default-library=static \
+	--libdir=lib \
+	--prefix=/usr/local \
+	--buildtype=release \
     -Dcontrib=disabled \
     -Dexamples=disabled \
     -Dtests=disabled \

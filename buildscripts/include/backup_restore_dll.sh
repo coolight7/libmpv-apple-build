@@ -10,13 +10,13 @@ if [[ ! -e $back_path ]]; then
     exit 0
 fi
 
-mv libavfilter.so*      $back_path/
-mv libavutil.so*        $back_path/
-mv libavdevice.so*      $back_path/
-mv libavcodec.so*       $back_path/
-mv libavformat.so*      $back_path/
-mv libswresample.so*    $back_path/
-mv libswscale.so*       $back_path/
+mv libavfilter.dylib*      $back_path/
+mv libavutil.dylib*        $back_path/
+mv libavdevice.dylib*      $back_path/
+mv libavcodec.dylib*       $back_path/
+mv libavformat.dylib*      $back_path/
+mv libswresample.dylib*    $back_path/
+mv libswscale.dylib*       $back_path/
 
 cp $back_path/libavfilter.a     ./
 cp $back_path/libavutil.a       ./

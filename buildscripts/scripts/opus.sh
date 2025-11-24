@@ -17,7 +17,7 @@ cp -f ../opus_dnn/*.h ../opus_dnn/*.c dnn/
 # 阻止 ./autogen.sh 内直接运行 configure
 export NOCONFIGURE=no-config
 # -mno-ieee-fp is not supported by clang
-sed s/\-mno\-ieee\-fp// -i configure.ac
+gsed s/\-mno\-ieee\-fp// -i configure.ac
 [ -f configure ] || ./autogen.sh
 
 mkdir -p _build$cpu_suffix

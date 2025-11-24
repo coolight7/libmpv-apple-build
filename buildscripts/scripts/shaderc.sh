@@ -25,8 +25,10 @@ cpu=
 
 LTO_JOB=1 CONF=1 "${MY_CMAKE_EXE_DIR}/cmake" -S.. -B. \
     -G Ninja \
-    -DCMAKE_SYSTEM_NAME=Linux \
+    -DCMAKE_SYSTEM_NAME=${current_target_os} \
     -DCMAKE_SYSTEM_PROCESSOR=${cpu} \
+    -DCMAKE_OSX_SYSROOT=${sysroot_dir} \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_DEPLOYMENT_TARGET} \
     -DCMAKE_FIND_ROOT_PATH=${prefix_dir} \
     -DCMAKE_C_FLAGS=-fPIC \
 	-DCMAKE_CXX_FLAGS="-fPIC -std=c++17" \
@@ -54,5 +56,5 @@ cp -f "./libshaderc/libshaderc_combined.a" "$prefix_dir/lib/libshaderc_combined.
 cp -f "./shaderc_combined.pc" "$prefix_dir/lib/pkgconfig/shaderc_combined.pc"
 cp -f "./shaderc_combined.pc" "$prefix_dir/lib/pkgconfig/shaderc.pc"
 
-# sed '/^Libs:/ s|$| -lc++_static -lc++abi|' "$prefix_dir/lib/pkgconfig/shaderc.pc" -i
-# sed '/^Libs:/ s|$| -lc++_static -lc++abi|' "$prefix_dir/lib/pkgconfig/shaderc_combined.pc" -i
+# gsed '/^Libs:/ s|$| -lc++_static -lc++abi|' "$prefix_dir/lib/pkgconfig/shaderc.pc" -i ''
+# gsed '/^Libs:/ s|$| -lc++_static -lc++abi|' "$prefix_dir/lib/pkgconfig/shaderc_combined.pc" -i ''

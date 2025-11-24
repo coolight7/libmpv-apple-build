@@ -25,8 +25,10 @@ cpu=
 # 禁用编译 可执行文件 tar/unzip 等 ...
 CONF=1 "${MY_CMAKE_EXE_DIR}/cmake" -S.. -B. \
     -G Ninja \
-    -DCMAKE_SYSTEM_NAME=Linux \
+    -DCMAKE_SYSTEM_NAME=${current_target_os} \
     -DCMAKE_SYSTEM_PROCESSOR=${cpu} \
+    -DCMAKE_OSX_SYSROOT=${sysroot_dir} \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_DEPLOYMENT_TARGET} \
     -DCMAKE_FIND_ROOT_PATH=${prefix_dir} \
     -DCMAKE_C_FLAGS=-fPIC -DCMAKE_CXX_FLAGS=-fPIC \
     -DCMAKE_BUILD_TYPE=Release \
@@ -36,7 +38,7 @@ CONF=1 "${MY_CMAKE_EXE_DIR}/cmake" -S.. -B. \
     -DENABLE_ZSTD=ON \
     -DENABLE_OPENSSL=ON \
     -DENABLE_BZip2=ON \
-    -DENABLE_ICONV=ON \
+    -DENABLE_ICONV=OFF \
     -DENABLE_LIBXML2=ON \
     -DENABLE_EXPAT=ON \
     -DENABLE_LZO=ON \

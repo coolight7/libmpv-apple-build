@@ -18,6 +18,8 @@ if [ $TRAVIS -eq 0 ]; then
 		python3-pip python3-setuptools unzip;
 		pip3 install meson; }
 fi
+# pip3 install jinja2
+
 
 os_ndk="linux"
 
