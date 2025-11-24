@@ -34,9 +34,12 @@ export CPLUS_INCLUDE_PATH=$sysroot_dir/usr/include/c++/v1:$prefix_dir/include:$C
 target_os=
 target_options=
 if [[ "$current_target_os" == "iOS" ]]; then
+	unset SDKROOT MACOSX_DEPLOYMENT_TARGET
+	export IPHONEOS_DEPLOYMENT_TARGET=12.1
 	target_os=arm64-apple-ios12.1
-	target_options="-Daudiounit=enabled -Davfoundation=disabled -Dcocoa=disabled -Dcoreaudio=disabled -Dvideotoolbox-gl=disabled -Dvideotoolbox-pl=disabled -Dios-gl=enabled "
+	target_options="-Daudiounit=enabled -Davfoundation=disabled -Dios-gl=enabled -Dcocoa=disabled -Dgl-cocoa=disabled -Dcoreaudio=disabled -Dvideotoolbox-gl=disabled -Dvideotoolbox-pl=disabled -Dswift-build=disabled"
 else 
+	unset IPHONEOS_DEPLOYMENT_TARGET
 	target_os=arm64-apple-macos11.0
 	target_options="-Dcoreaudio=enabled -Davfoundation=enabled -Dcocoa=disabled -Dgl-cocoa=disabled -Dvideotoolbox-gl=disabled -Dvideotoolbox-pl=disabled -Dmacos-cocoa-cb=disabled -Dswift-build=disabled"
 fi
