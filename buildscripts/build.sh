@@ -105,9 +105,9 @@ loadarch () {
 	export toolchain_dir=$toolchain_dir
 	export sysroot_dir=$sysroot_dir
 
-	export CFLAGS="-arch $_arch $min_version -isysroot $sysroot_dir -I$sysroot_dir/usr/include -F$sysroot_dir/System/Library/Frameworks/ -I$prefix_dir/include -fPIC -O3"
-	export CXXFLAGS="-arch $_arch $min_version -isysroot $sysroot_dir -I$sysroot_dir/usr/include -I$sysroot_dir/usr/include/c++/v1 -F$sysroot_dir/System/Library/Frameworks/ -I$prefix_dir/include -fPIC -O3 -stdlib=libc++"
-	export LDFLAGS="-arch $_arch $min_version -isysroot $sysroot_dir -F$sysroot_dir/System/Library/Frameworks/ -L$prefix_dir/lib/ -Wl,-O3"
+	export CFLAGS="-I$prefix_dir/include -arch $_arch $min_version -isysroot $sysroot_dir -I$sysroot_dir/usr/include -F$sysroot_dir/System/Library/Frameworks/ -fPIC -O3"
+	export CXXFLAGS="-I$prefix_dir/include -arch $_arch $min_version -isysroot $sysroot_dir -I$sysroot_dir/usr/include -I$sysroot_dir/usr/include/c++/v1 -F$sysroot_dir/System/Library/Frameworks/ -fPIC -O3 -stdlib=libc++"
+	export LDFLAGS="-L$prefix_dir/lib/ -arch $_arch $min_version -isysroot $sysroot_dir -F$sysroot_dir/System/Library/Frameworks/ -Wl,-O3"
 	export CC="$toolchain_dir/clang"
 	export CXX="$toolchain_dir/clang++"
 	if [[ "$1" == arm* ]]; then
