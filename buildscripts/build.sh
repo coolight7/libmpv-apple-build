@@ -7,7 +7,7 @@ cleanbuild=0
 clean_lib_ff_mpv=0
 clean_mediaxx=0
 target=mediaxx
-systems=(iOS Darwin)
+systems=(Darwin iOS)
 # archs=(armv7l arm64 x86 x86_64)
 archs=(arm64)
 
@@ -72,24 +72,31 @@ loadarch () {
 	toolchain_dir=
 	sysroot_dir=
 	min_version=
+	unset SDKROOT IPHONEOS_DEPLOYMENT_TARGET MACOSX_DEPLOYMENT_TARGET
 	if [[ "$current_target_os" == "iOS" && "$current_abi_name" == "arm64" ]]; then
 		cp "./crossfiles/ios-arm64.ini" "$prefix_dir/crossfile.txt"
-		export CMAKE_DEPLOYMENT_TARGET=12.1
-		min_version="-miphoneos-version-min=12.1"
+		min_version="-miphoneos-version-min=12.1 -mios-version-min=12.1"
 		toolchain_dir=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
 		sysroot_dir=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk
+		export IPHONEOS_DEPLOYMENT_TARGET=12.1
+		export CMAKE_DEPLOYMENT_TARGET=12.1
+		export SDKROOT=$sysroot_dir
 	elif [[ "$current_target_os" == "Darwin" && "$current_abi_name" == "arm64" ]]; then
 		cp "./crossfiles/macos-arm64.ini" "$prefix_dir/crossfile.txt"
-		export CMAKE_DEPLOYMENT_TARGET=11.0
-		min_version="-mmacosx-version-min=11.0"
+		min_version="-mmacosx-version-min=11.0 -mmacos-version-min=11.0"
 		toolchain_dir=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
 		sysroot_dir=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+    	export MACOSX_DEPLOYMENT_TARGET=11.0
+		export CMAKE_DEPLOYMENT_TARGET=11.0
+		export SDKROOT=$sysroot_dir
 	elif [[ "$current_target_os" == "Darwin" && "$current_abi_name" == "x86_64" ]]; then
 		cp "./crossfiles/macos-amd64.ini" "$prefix_dir/crossfile.txt"
-		export CMAKE_DEPLOYMENT_TARGET=11.0
-		min_version="-mmacosx-version-min=11.0"
+		min_version="-mmacosx-version-min=11.0 -mmacos-version-min=11.0"
 		toolchain_dir=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
 		sysroot_dir=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+    	export MACOSX_DEPLOYMENT_TARGET=11.0
+		export CMAKE_DEPLOYMENT_TARGET=11.0
+		export SDKROOT=$sysroot_dir
 	else
 		echo "unsupport targetos / abi: $current_target_os, $current_abi_name"
 		exit -77
@@ -100,7 +107,7 @@ loadarch () {
 
 	export CFLAGS="-arch $_arch $min_version -isysroot $sysroot_dir -I$sysroot_dir/usr/include -F$sysroot_dir/System/Library/Frameworks/ -I$prefix_dir/include -fPIC -O3"
 	export CXXFLAGS="-arch $_arch $min_version -isysroot $sysroot_dir -I$sysroot_dir/usr/include -I$sysroot_dir/usr/include/c++/v1 -F$sysroot_dir/System/Library/Frameworks/ -I$prefix_dir/include -fPIC -O3 -stdlib=libc++"
-	export LDFLAGS="-arch $_arch $min_version -isysroot $sysroot_dir -F$sysroot_dir/System/Library/Frameworks/ -Wl,-O3"
+	export LDFLAGS="-arch $_arch $min_version -isysroot $sysroot_dir -F$sysroot_dir/System/Library/Frameworks/ -L$prefix_dir/lib/ -Wl,-O3"
 	export CC="$toolchain_dir/clang"
 	export CXX="$toolchain_dir/clang++"
 	if [[ "$1" == arm* ]]; then

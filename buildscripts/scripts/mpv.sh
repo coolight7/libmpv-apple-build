@@ -34,29 +34,26 @@ export CPLUS_INCLUDE_PATH=$sysroot_dir/usr/include/c++/v1:$prefix_dir/include:$C
 target_os=
 target_options=
 if [[ "$current_target_os" == "iOS" ]]; then
-	unset SDKROOT MACOSX_DEPLOYMENT_TARGET
-	export IPHONEOS_DEPLOYMENT_TARGET=12.1
 	target_os=arm64-apple-ios12.1
-	target_options="-Daudiounit=enabled -Davfoundation=disabled -Dios-gl=enabled -Dcocoa=disabled -Dgl-cocoa=disabled -Dcoreaudio=disabled -Dvideotoolbox-gl=disabled -Dvideotoolbox-pl=disabled -Dswift-build=disabled"
+	target_options="-Dcoreaudio=disabled -Daudiounit=enabled -Davfoundation=disabled -Dios-gl=enabled -Dcocoa=disabled -Dgl-cocoa=disabled -Dvideotoolbox-gl=disabled -Dvideotoolbox-pl=disabled -Dmacos-cocoa-cb=disabled -Dswift-build=disabled"
 else 
-	unset IPHONEOS_DEPLOYMENT_TARGET
 	target_os=arm64-apple-macos11.0
-	target_options="-Dcoreaudio=enabled -Davfoundation=enabled -Dcocoa=disabled -Dgl-cocoa=disabled -Dvideotoolbox-gl=disabled -Dvideotoolbox-pl=disabled -Dmacos-cocoa-cb=disabled -Dswift-build=disabled"
+	target_options="-Dcoreaudio=enabled -Daudiounit=disabled -Davfoundation=enabled -Dios-gl=disabled -Dcocoa=disabled -Dgl-cocoa=disabled -Dvideotoolbox-gl=disabled -Dvideotoolbox-pl=disabled -Dmacos-cocoa-cb=disabled -Dswift-build=disabled"
 fi
 
 # c++std: libjxl、shaderc
 # 由 mediaxx 静态链接标准库并导出符号，libmpv 动态链接使用
-LDFLAGS="$LDFLAGS -L$prefix_dir/lib/ $default_ld_cxx_stdlib -lm" CFLAGS="$CFLAGS -F$sysroot_dir/System/Library/Frameworks/ -I$sysroot_dir/usr/include -I$prefix_dir/include" CXXFLAGS="$CXXFLAGS -F$sysroot_dir/System/Library/Frameworks/ -I$sysroot_dir/usr/include -I$prefix_dir/include" meson setup $build \
+LDFLAGS="$LDFLAGS -L$prefix_dir/lib/ $default_ld_cxx_stdlib -lm" CFLAGS="$CFLAGS " CXXFLAGS="$CXXFLAGS " meson setup $build \
 	--cross-file "$prefix_dir/crossfile.txt" \
 	--default-library static \
 	--libdir=lib \
 	--prefix=/usr/local \
     -Dbuildtype=release \
-    -Db_lto=true \
+    -Db_lto=false \
 	-Db_lto_mode=default \
 	-Db_ndebug=true \
-	-Dc_args="$CFLAGS -F$sysroot_dir/System/Library/Frameworks/ -I$sysroot_dir/usr/include -I$prefix_dir/include " \
-	-Dcpp_args="$CXXFLAGS -F$sysroot_dir/System/Library/Frameworks/ -I$sysroot_dir/usr/include -I$prefix_dir/include " \
+	-Dc_args="$CFLAGS " \
+	-Dcpp_args="$CXXFLAGS " \
 	-Dobjc_args="-F$sysroot_dir/System/Library/Frameworks/ -I$sysroot_dir/usr/include -I$prefix_dir/include" \
 	-Dobjcpp_args="-F$sysroot_dir/System/Library/Frameworks/ -I$sysroot_dir/usr/include -I$prefix_dir/include" \
 	-Dswift-flags="-target $target_os -sdk $sysroot_dir -sysroot $sysroot_dir -F$sysroot_dir/System/Library/Frameworks/ -I$sysroot_dir/usr/include -I$prefix_dir/include" \

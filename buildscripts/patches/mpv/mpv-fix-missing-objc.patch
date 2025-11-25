@@ -1,0 +1,38 @@
+diff --git a/meson.build b/meson.build
+index 7572769..032eb66 100644
+--- a/meson.build
++++ b/meson.build
+@@ -409,6 +409,7 @@ cocoa = dependency('appleframeworks', modules: ['Cocoa', 'IOKit', 'QuartzCore'],
+                    required: get_option('cocoa'))
+ features += {'cocoa': cocoa.found()}
+ if features['cocoa']
++    add_languages('objc')
+     dependencies += cocoa
+     sources += files('osdep/language-mac.c',
+                      'osdep/path-mac.m',
+@@ -801,6 +802,7 @@ audiounit = {
+ }
+ features += {'audiounit': audiounit['deps'].found() and audiounit['symbol']}
+ if features['audiounit']
++    add_languages('objc')
+     dependencies += audiounit['deps']
+     sources += files('audio/out/ao_audiounit.m')
+ endif
+@@ -1506,8 +1508,7 @@ endif
+ # macOS features
+ macos_sdk_version_py = ''
+ if darwin
+-    macos_sdk_version_py = find_program(join_paths(source_root, 'TOOLS', 'macos-sdk-version.py'),
+-                                                   required: true)
++    macos_sdk_version_py = find_program(join_paths(source_root, 'TOOLS', 'macos-sdk-version.py'),required: true)
+ endif
+ 
+ macos_sdk_path = ''
+@@ -1527,6 +1528,7 @@ if macos_sdk_version != '0.0'
+     add_languages('objc', native: false)
+     objc_link_flags = ['-isysroot', macos_sdk_path, '-L/usr/lib', '-L/usr/local/lib']
+     add_project_link_arguments(objc_link_flags, language: ['c', 'objc'])
++    sources += files('osdep/utils-mac.c')
+ endif
+ 
+ xcrun = find_program('xcrun', required: get_option('swift-build').require(darwin))

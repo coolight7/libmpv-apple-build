@@ -38,21 +38,28 @@ gsed -i '/^Libs/ s|-lc++| |' $prefix_dir/lib/pkgconfig/*.pc
 export PKG_CONFIG_SYSROOT_DIR="$prefix_dir"
 export PKG_CONFIG_LIBDIR="$prefix_dir/usr/lib/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/lib/x86_64-linux-gnu/pkgconfig:/usr/local/share/pkgconfig:/usr/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig"
 
+extend_fw_arg=
+if [[ "$current_target_os" == "iOS" ]]; then
+	extend_fw_arg="-framework AVFoundation -framework OpenGLES"
+else 
+	extend_fw_arg="-framework AVFoundation -framework CoreAudio -framework Foundation -framework CoreFoundation "
+fi
+
 cpu=
 [[ "$cpu_triple" == "aarch64"* ]] && cpu=aarch64
 [[ "$cpu_triple" == "x86_64"* ]] && cpu=x86_64
 [[ "$cpu_triple" == "i686"* ]] && cpu=x86
 
-LDFLAGS="$LDFLAGS -L$prefix_dir/lib/ $default_ld_cxx_stdlib_mediaxx -lm" CFLAGS="$CFLAGS " CXXFLAGS="$CXXFLAGS " "${MY_CMAKE_EXE_DIR}/cmake" -S.. -B. \
+LDFLAGS="$LDFLAGS $extend_fw_arg $default_ld_cxx_stdlib_mediaxx -lm" CFLAGS="$CFLAGS " CXXFLAGS="$CXXFLAGS " "${MY_CMAKE_EXE_DIR}/cmake" -S.. -B. \
     -G Ninja \
     -DCMAKE_SYSTEM_NAME=${current_target_os} \
     -DCMAKE_SYSTEM_PROCESSOR=${cpu} \
     -DCMAKE_OSX_SYSROOT=${sysroot_dir} \
     -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_DEPLOYMENT_TARGET} \
     -DCMAKE_FIND_ROOT_PATH=${prefix_dir} \
-    -DCMAKE_C_FLAGS="-I$prefix_dir/include -Wno-error=int-conversion -Wno-error=incompatible-pointer-types ${cpuflags}" \
-    -DCMAKE_CXX_FLAGS="-I$prefix_dir/include " \
-    -DCMAKE_SHARED_LINKER_FLAGS="-L$prefix_dir/lib/ $default_ld_cxx_stdlib_mediaxx -lm" \
+    -DCMAKE_C_FLAGS="$CFLAGS -Wno-error=int-conversion -Wno-error=incompatible-pointer-types ${cpuflags}" \
+    -DCMAKE_CXX_FLAGS="$CXXFLAGS $extend_fw_arg " \
+    -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS $extend_fw_arg $default_ld_cxx_stdlib_mediaxx -lm" \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_LIBDIR=lib \
     -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON \
