@@ -65,6 +65,6 @@ dep_libplacebo=(lcms2)
 dep_opus=(opus_dnn)
 
 # 依赖项的依赖已有，则不需要重复依赖编译
-dep_ffmpeg=(libarchive uchardet libass mbedtls dav1d libxml2 libplacebo libvorbis libvpx libbs2b opus libsoxr openssl bzip2 rubberband libmysofa libwebp libjxl libzimg)
+dep_ffmpeg=(libarchive libass uchardet mbedtls dav1d libxml2 libplacebo libvorbis libvpx libbs2b opus libsoxr openssl bzip2 rubberband libmysofa libwebp libjxl libzimg)
 dep_mpv=(ffmpeg)
 dep_mediaxx=(mpv)

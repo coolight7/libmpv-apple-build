@@ -16,23 +16,15 @@ current_source_dir=$(pwd)
 mkdir -p _build$cpu_suffix
 cd _build$cpu_suffix
 
-cpu=armv7-a
+cpu=armv8-a
 cpuflags=
 asmflags=
 if [[ "$cpu_triple" == "aarch64"* ]]; then
 	cpu=armv8-a
   	asmflags=" --enable-neon --enable-asm --enable-inline-asm"
-elif [[ "$cpu_triple" == "arm"* ]]; then
- 	cpu=armv7-a
-	cpuflags="$cpuflags -mfpu=neon -mcpu=cortex-a8"
-	asmflags=" --enable-neon --enable-asm --enable-inline-asm"
 elif [[ "$cpu_triple" == "x86_64"* ]]; then
 	cpu=x86-64
 	asmflags=" --disable-neon --enable-asm --enable-inline-asm"
-elif [[ "$cpu_triple" == "i686"* ]]; then
-	cpu="i686 --disable-asm"
-	# asm disabled due to this ticket https://trac.ffmpeg.org/ticket/4928
-	asmflags=" --disable-neon --disable-asm --disable-inline-asm"
 fi 
 
 gsed -i '/^Libs/ s|-lstdc++| |' $prefix_dir/lib/pkgconfig/*.pc
@@ -45,19 +37,33 @@ gsed -i '/^Libs/ s|-lc++| |' $prefix_dir/lib/pkgconfig/*.pc
 export PKG_CONFIG_SYSROOT_DIR="$prefix_dir"
 export PKG_CONFIG_LIBDIR="$prefix_dir/usr/lib/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/lib/x86_64-linux-gnu/pkgconfig:/usr/local/share/pkgconfig:/usr/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig"
 
+cross_compile=
+if [[ "$current_target_os" == "iOS" ]]; then
+	cross_compile="--enable-cross-compile"
+else 
+	cross_compile=""
+fi
+
+# - FIX build ios: ld kill 9: ./libavcodec/sinewin_fixed_tablegen > libavcodec/sinewin_fixed_tables.h
+# 需要 host-cc 编译一个程序，然后运行生成代码 gen，上述错误即编译有问题，运行时崩溃导致无法生成代码
+export MACOSX_DEPLOYMENT_TARGET=11.0
+export SDKROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+
 # c++std: libjxl、shaderc
-# 链接c++标准库时，如果需要静态链接
-# --extra-ldflags="-L$prefix_dir/lib -lm -nostdlib++ -lc++_static -lc++abi"
-# [vulkan] 会增加 5mb 左右的大小
-../configure --enable-cross-compile \
+# - 链接c++标准库时，如果需要静态链接：
+# 	--extra-ldflags="-L$prefix_dir/lib -lm -nostdlib++ -lc++_static -lc++abi"
+# - [vulkan] 会增加 5mb 左右的大小
+../configure $cross_compile \
 	--target-os=darwin --arch=${cpu_triple%%-*} --cpu=$cpu \
 	--nm="$NM" --strip=strip --ranlib="$RANLIB" --ar="$AR" --cc="$CC" --cxx="$CXX" \
+	--dep-cc="clang" --sysroot=$sysroot_dir \
+	--host-cc="clang" --host-cflags="-arch arm64 --target=arm64-apple-macos11.0 -mmacosx-version-min=11.0 -mmacos-version-min=11.0" --host-cppflags="-arch arm64 --target=arm64-apple-macos11.0 -mmacosx-version-min=11.0 -mmacos-version-min=11.0" --host-ldflags="-arch arm64 --target=arm64-apple-macos11.0 -mmacosx-version-min=11.0 -mmacos-version-min=11.0" \
 	--pkg-config=pkg-config \
 	--pkg-config-flags=--static \
 	--stdc=c23 --stdcxx=c++23 \
-	--extra-cflags="$CFLAGS -Wno-error=int-conversion -Wno-error=incompatible-pointer-types -I$prefix_dir/include $cpuflags" \
-	--extra-cxxflags="$CXXFLAGS -I$prefix_dir/include $cpuflags" \
-	--extra-ldflags="$LDFLAGS -L$prefix_dir/lib $default_ld_cxx_stdlib -lc++ -lm -lpthread" \
+	--extra-cflags="$CFLAGS -Wno-error=int-conversion -Wno-error=incompatible-pointer-types $cpuflags" \
+	--extra-cxxflags="$CXXFLAGS $cpuflags" \
+	--extra-ldflags="$LDFLAGS $default_ld_cxx_stdlib -lc++ -lm -lpthread" \
 	\
 	--enable-gpl \
 	--enable-nonfree \

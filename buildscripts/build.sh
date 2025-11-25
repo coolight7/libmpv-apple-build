@@ -7,7 +7,7 @@ cleanbuild=0
 clean_lib_ff_mpv=0
 clean_mediaxx=0
 target=mediaxx
-systems=(Darwin iOS)
+systems=(iOS Darwin)
 # archs=(armv7l arm64 x86 x86_64)
 archs=(arm64)
 
@@ -75,15 +75,15 @@ loadarch () {
 	unset SDKROOT IPHONEOS_DEPLOYMENT_TARGET MACOSX_DEPLOYMENT_TARGET
 	if [[ "$current_target_os" == "iOS" && "$current_abi_name" == "arm64" ]]; then
 		cp "./crossfiles/ios-arm64.ini" "$prefix_dir/crossfile.txt"
-		min_version="-miphoneos-version-min=12.1 -mios-version-min=12.1"
+		min_version="--target=arm64-apple-ios13.0 -miphoneos-version-min=13.0 -mios-version-min=13.0"
 		toolchain_dir=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
 		sysroot_dir=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk
-		export IPHONEOS_DEPLOYMENT_TARGET=12.1
-		export CMAKE_DEPLOYMENT_TARGET=12.1
+		export IPHONEOS_DEPLOYMENT_TARGET=13.0
+		export CMAKE_DEPLOYMENT_TARGET=13.0
 		export SDKROOT=$sysroot_dir
 	elif [[ "$current_target_os" == "Darwin" && "$current_abi_name" == "arm64" ]]; then
 		cp "./crossfiles/macos-arm64.ini" "$prefix_dir/crossfile.txt"
-		min_version="-mmacosx-version-min=11.0 -mmacos-version-min=11.0"
+		min_version="--target=arm64-apple-macos11.0 -mmacosx-version-min=11.0 -mmacos-version-min=11.0"
 		toolchain_dir=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
 		sysroot_dir=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
     	export MACOSX_DEPLOYMENT_TARGET=11.0
@@ -91,7 +91,7 @@ loadarch () {
 		export SDKROOT=$sysroot_dir
 	elif [[ "$current_target_os" == "Darwin" && "$current_abi_name" == "x86_64" ]]; then
 		cp "./crossfiles/macos-amd64.ini" "$prefix_dir/crossfile.txt"
-		min_version="-mmacosx-version-min=11.0 -mmacos-version-min=11.0"
+		min_version="--target=arm64-apple-macos11.0 -mmacosx-version-min=11.0 -mmacos-version-min=11.0"
 		toolchain_dir=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
 		sysroot_dir=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
     	export MACOSX_DEPLOYMENT_TARGET=11.0

@@ -21,9 +21,10 @@ meson setup $build --cross-file "$prefix_dir/crossfile.txt" \
 	--libdir=lib \
 	--prefix=/usr/local \
 	--buildtype=release \
-	-Dtests=disabled -Ddocs=disabled \
+	-Dtests=disabled \
+	-Ddocs=disabled \
 	-Dicu=disabled \
-	-Dbenchmark=disabled \
+	-Dbenchmark=disabled
 
 "${MY_NINJA_EXE_DIR}/ninja" -C $build -j$cores
 DESTDIR="$prefix_dir" "${MY_NINJA_EXE_DIR}/ninja" -C $build install
