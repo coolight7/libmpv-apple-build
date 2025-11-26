@@ -70,8 +70,8 @@ export SDKROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platf
 	--enable-version3 \
 	\
     --disable-debug \
-	--enable-shared \
-	--disable-static \
+	--disable-shared \
+	--enable-static \
 	--enable-stripping \
 	--enable-runtime-cpudetect \
 	--enable-pic \
