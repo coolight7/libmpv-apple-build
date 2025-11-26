@@ -37,23 +37,23 @@ gsed -i '/^Libs/ s|-lc++| |' $prefix_dir/lib/pkgconfig/*.pc
 export PKG_CONFIG_SYSROOT_DIR="$prefix_dir"
 export PKG_CONFIG_LIBDIR="$prefix_dir/usr/lib/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/lib/x86_64-linux-gnu/pkgconfig:/usr/local/share/pkgconfig:/usr/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig"
 
-cross_compile=
+extend_args=
 if [[ "$current_target_os" == "iOS" ]]; then
-	cross_compile="--enable-cross-compile"
+	extend_args="--enable-cross-compile"
 else 
-	cross_compile=""
+	extend_args="--enable-appkit"
 fi
 
 # - FIX build ios: ld kill 9: ./libavcodec/sinewin_fixed_tablegen > libavcodec/sinewin_fixed_tables.h
 # 需要 host-cc 编译一个程序，然后运行生成代码 gen，上述错误即编译有问题，运行时崩溃导致无法生成代码
-export MACOSX_DEPLOYMENT_TARGET=11.0
-export SDKROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+# export MACOSX_DEPLOYMENT_TARGET=11.0
+# export SDKROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
 
 # c++std: libjxl、shaderc
 # - 链接c++标准库时，如果需要静态链接：
 # 	--extra-ldflags="-L$prefix_dir/lib -lm -nostdlib++ -lc++_static -lc++abi"
 # - [vulkan] 会增加 5mb 左右的大小
-../configure $cross_compile \
+../configure $extend_args \
 	--target-os=darwin --arch=${cpu_triple%%-*} --cpu=$cpu \
 	--nm="$NM" --strip=strip --ranlib="$RANLIB" --ar="$AR" --cc="$CC" --cxx="$CXX" \
 	--dep-cc="clang" --sysroot=$sysroot_dir \
@@ -167,9 +167,6 @@ export SDKROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platf
 	--disable-vaapi \
 	--disable-vdpau \
 	--disable-linux-perf \
-	--disable-appkit \
-	--disable-videotoolbox \
-	--disable-audiotoolbox \
 	--disable-v4l2-m2m \
 	--disable-mmal \
 	--disable-jni \

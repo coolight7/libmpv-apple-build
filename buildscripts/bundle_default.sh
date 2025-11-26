@@ -40,7 +40,7 @@ mkdir -p $build_home_dir/output/
 copyLib() {
   mkdir -p $build_home_dir/output/$1/
   cp prefix/$1/lib/libmediaxx.dylib               $build_home_dir/output/$1/
-  cp prefix/$1/lib/libmpv.dylib                   $build_home_dir/output/$1/
+  cp prefix/$1/lib/libmpv.2.dylib                 $build_home_dir/output/$1/
   cp prefix/$1/lib/libswresample.dylib            $build_home_dir/output/$1/
   cp prefix/$1/lib/libswscale.dylib               $build_home_dir/output/$1/
   cp prefix/$1/lib/libavutil.dylib                $build_home_dir/output/$1/
@@ -48,6 +48,16 @@ copyLib() {
   cp prefix/$1/lib/libavformat.dylib              $build_home_dir/output/$1/
   cp prefix/$1/lib/libavfilter.dylib              $build_home_dir/output/$1/
   cp prefix/$1/lib/libavdevice.dylib              $build_home_dir/output/$1/
+
+  install_name_tool -id "@rpath/libmediaxx.dylib"     $build_home_dir/output/$1/libmediaxx.dylib    
+  install_name_tool -id "@rpath/libmpv.2.dylib"       $build_home_dir/output/$1/libmpv.2.dylib      
+  install_name_tool -id "@rpath/libswresample.dylib"  $build_home_dir/output/$1/libswresample.dylib 
+  install_name_tool -id "@rpath/libswscale.dylib"     $build_home_dir/output/$1/libswscale.dylib    
+  install_name_tool -id "@rpath/libavutil.dylib"      $build_home_dir/output/$1/libavutil.dylib     
+  install_name_tool -id "@rpath/libavcodec.dylib"     $build_home_dir/output/$1/libavcodec.dylib    
+  install_name_tool -id "@rpath/libavformat.dylib"    $build_home_dir/output/$1/libavformat.dylib   
+  install_name_tool -id "@rpath/libavfilter.dylib"    $build_home_dir/output/$1/libavfilter.dylib   
+  install_name_tool -id "@rpath/libavdevice.dylib"    $build_home_dir/output/$1/libavdevice.dylib   
 
   strip $build_home_dir/output/$1/*.dylib
 
