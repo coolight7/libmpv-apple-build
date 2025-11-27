@@ -57,7 +57,7 @@ LDFLAGS="$LDFLAGS $extend_fw_arg $default_ld_cxx_stdlib_mediaxx -lm" CFLAGS="$CF
     -DCMAKE_OSX_SYSROOT=${sysroot_dir} \
     -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_DEPLOYMENT_TARGET} \
     -DCMAKE_FIND_ROOT_PATH=${prefix_dir} \
-    -DCMAKE_C_FLAGS="$CFLAGS -Wno-error=int-conversion -Wno-error=incompatible-pointer-types ${cpuflags}" \
+    -DCMAKE_C_FLAGS="$CFLAGS -Wno-error=int-conversion ${cpuflags}" \
     -DCMAKE_CXX_FLAGS="$CXXFLAGS $extend_fw_arg " \
     -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS $extend_fw_arg $default_ld_cxx_stdlib_mediaxx -lm" \
     -DCMAKE_BUILD_TYPE=Release \

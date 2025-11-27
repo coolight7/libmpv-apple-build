@@ -106,7 +106,7 @@ loadarch () {
 	export sysroot_dir=$sysroot_dir
 
 	export CFLAGS="-I$prefix_dir/include -arch $_arch $min_version -isysroot $sysroot_dir -I$sysroot_dir/usr/include -F$sysroot_dir/System/Library/Frameworks/ -fPIC -O3"
-	export CXXFLAGS="-I$prefix_dir/include -arch $_arch $min_version -isysroot $sysroot_dir -I$sysroot_dir/usr/include -I$sysroot_dir/usr/include/c++/v1 -F$sysroot_dir/System/Library/Frameworks/ -fPIC -O3 -stdlib=libc++"
+	export CXXFLAGS="-I$prefix_dir/include -arch $_arch $min_version -isysroot $sysroot_dir -I$sysroot_dir/usr/include -I$sysroot_dir/usr/include/c++/v1 -F$sysroot_dir/System/Library/Frameworks/ -fPIC -O3"
 	export LDFLAGS="-L$prefix_dir/lib/ -arch $_arch $min_version -isysroot $sysroot_dir -F$sysroot_dir/System/Library/Frameworks/ -Wl,-O3"
 	export CC="$toolchain_dir/clang"
 	export CXX="$toolchain_dir/clang++"
@@ -156,8 +156,9 @@ build () {
 		|| ( $1 == "openssl" && -f "$prefix_dir/lib/libssl.a" ) 
 		# || ( $1 == "ffmpeg")
 		|| ( $1 == "ffmpeg" && -f "$prefix_dir/lib/libavfilter.a") 
-		# || ( $1 == "ffmpeg" && -f "$prefix_dir/lib/libavfilter.a")
+		|| ( $1 == "ffmpeg" && -f "$prefix_dir/lib/libavfilter.dylib")
 		|| ( $1 == "mpv" && -f "$prefix_dir/lib/libmpv.a" ) 
+		|| ( $1 == "mpv" && -f "$prefix_dir/lib/libmpv.dylib" ) 
 		]]; then
 		printf >&2 '\e[1;30m%s\e[m\n' "-  Have $1. a/dylib, skip."
 		return

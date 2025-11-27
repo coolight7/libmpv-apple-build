@@ -61,7 +61,7 @@ fi
 	--pkg-config=pkg-config \
 	--pkg-config-flags=--static \
 	--stdc=c23 --stdcxx=c++23 \
-	--extra-cflags="$CFLAGS -fno-stack-check -Wno-error=int-conversion -Wno-error=incompatible-pointer-types $cpuflags" \
+	--extra-cflags="$CFLAGS -fno-stack-check -Wno-error=int-conversion $cpuflags" \
 	--extra-cxxflags="$CXXFLAGS $cpuflags -fno-stack-check" \
 	--extra-ldflags="$LDFLAGS $default_ld_cxx_stdlib -lc++ -lm -lpthread" \
 	\
