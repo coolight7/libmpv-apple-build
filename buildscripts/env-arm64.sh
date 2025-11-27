@@ -1,24 +1,24 @@
 AS=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/nasm
-LDFLAGS=-L/Users/coolight/0Acoolight/program/flutter/libmpv-apple-build/buildscripts/prefix/Darwin/arm64/lib/ -arch arm64 --target=arm64-apple-macos11.0 -mmacosx-version-min=11.0 -mmacos-version-min=11.0 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/ -Wl,-O3
+LDFLAGS=-L/Users/coolight/0Acoolight/program/flutter/libmpv-apple-build/buildscripts/prefix/iOS/arm64/lib/ -arch arm64 --target=arm64-apple-ios13.0 -miphoneos-version-min=13.0 -mios-version-min=13.0 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk -F/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/ -Wl,-O3
 AR=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar
 TERM=xterm-256color
 SHELL=/bin/sh
 NM=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/nm
-CMAKE_DEPLOYMENT_TARGET=11.0
+CMAKE_DEPLOYMENT_TARGET=13.0
 source_dir=/Users/coolight/0Acoolight/program/flutter/libmpv-apple-build/buildscripts/deps/
 MY_CMAKE_EXE_DIR=/opt/homebrew/bin/
-SDKROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+SDKROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk
 OLDPWD=/Users/coolight/0Acoolight/program/flutter/libmpv-apple-build/buildscripts/deps/mediaxx
 os=linux
-current_target_os=Darwin
+current_target_os=iOS
 USER=root
 SUDO_USER=coolight
 SUDO_UID=501
-PKG_CONFIG_SYSROOT_DIR=/Users/coolight/0Acoolight/program/flutter/libmpv-apple-build/buildscripts/prefix/Darwin/arm64
+PKG_CONFIG_SYSROOT_DIR=/Users/coolight/0Acoolight/program/flutter/libmpv-apple-build/buildscripts/prefix/iOS/arm64
 default_ld_cxx_stdlib_mediaxx=
 current_abi_name=arm64
 SSH_AUTH_SOCK=/private/tmp/com.apple.launchd.6ARDSFCkiQ/Listeners
-CXXFLAGS=-I/Users/coolight/0Acoolight/program/flutter/libmpv-apple-build/buildscripts/prefix/Darwin/arm64/include -arch arm64 --target=arm64-apple-macos11.0 -mmacosx-version-min=11.0 -mmacos-version-min=11.0 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1 -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/ -fPIC -O3 -stdlib=libc++
+CXXFLAGS=-I/Users/coolight/0Acoolight/program/flutter/libmpv-apple-build/buildscripts/prefix/iOS/arm64/include -arch arm64 --target=arm64-apple-ios13.0 -miphoneos-version-min=13.0 -mios-version-min=13.0 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include/c++/v1 -F/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/ -fPIC -O3 -stdlib=libc++
 VIRTUAL_ENV=/Users/coolight/0Acoolight/program/flutter/libmpv-apple-build/buildscripts/venv
 default_ld_cxx_stdlib_unset= 
 PATH=/opt/homebrew/bin/:/opt/homebrew/bin/:/Users/coolight/0Acoolight/program/flutter/libmpv-apple-build/buildscripts/venv/bin:/Users/coolight/.rvm/gems/ruby-3.0.0/bin:/Users/coolight/.rvm/gems/ruby-3.0.0@global/bin:/Users/coolight/.rvm/rubies/ruby-3.0.0/bin:/Users/coolight/.nvm/versions/node/v18.20.8/bin:/opt/homebrew/opt/openjdk@17/bin:/Users/coolight/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Library/Apple/usr/bin:/Users/coolight/.cargo/bin:/Users/coolight/.gem/bin:/Users/coolight/.rvm/bin
@@ -27,24 +27,24 @@ build_home_dir=/Users/coolight/0Acoolight/program/flutter/libmpv-apple-build/bui
 cpu_triple=aarch64-apple-darwin
 PWD=/Users/coolight/0Acoolight/program/flutter/libmpv-apple-build/buildscripts
 default_cxx_stl= 
-PKG_CONFIG_LIBDIR=/Users/coolight/0Acoolight/program/flutter/libmpv-apple-build/buildscripts/prefix/Darwin/arm64/lib/pkgconfig
+PKG_CONFIG_LIBDIR=/Users/coolight/0Acoolight/program/flutter/libmpv-apple-build/buildscripts/prefix/iOS/arm64/lib/pkgconfig
 LANG=zh_CN.UTF-8
 CXX=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
 HOME=/Users/coolight
 SUDO_COMMAND=./bundle_default.sh
 SHLVL=2
-cpu_suffix=-Darwin-arm64
-CFLAGS=-I/Users/coolight/0Acoolight/program/flutter/libmpv-apple-build/buildscripts/prefix/Darwin/arm64/include -arch arm64 --target=arm64-apple-macos11.0 -mmacosx-version-min=11.0 -mmacos-version-min=11.0 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/ -fPIC -O3
+cpu_suffix=-iOS-arm64
+CFLAGS=-I/Users/coolight/0Acoolight/program/flutter/libmpv-apple-build/buildscripts/prefix/iOS/arm64/include -arch arm64 --target=arm64-apple-ios13.0 -miphoneos-version-min=13.0 -mios-version-min=13.0 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include -F/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/ -fPIC -O3
 MY_NINJA_EXE_DIR=/opt/homebrew/bin/
-MACOSX_DEPLOYMENT_TARGET=11.0
 default_ld_cxx_stdlib=  
 LOGNAME=root
 toolchain_dir=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
+IPHONEOS_DEPLOYMENT_TARGET=13.0
 RANLIB=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib
-prefix_dir=/Users/coolight/0Acoolight/program/flutter/libmpv-apple-build/buildscripts/prefix/Darwin/arm64
+prefix_dir=/Users/coolight/0Acoolight/program/flutter/libmpv-apple-build/buildscripts/prefix/iOS/arm64
 CC=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang
 SUDO_GID=20
-sysroot_dir=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+sysroot_dir=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk
 VIRTUAL_ENV_PROMPT=venv
 COLORTERM=truecolor
 _=/usr/bin/env

@@ -15,9 +15,9 @@ else
 fi
 
 # 当只需要重新构建 mediaxx ，避免重复构建ffmpeg时启用
-pushd $PWD
-(. ../../../include/backup_restore_dll.sh $prefix_dir/lib/) || true
-popd
+# pushd $PWD
+# (. ../../../include/backup_restore_dll.sh $prefix_dir/lib/) || true
+# popd
 
 build=_build$cpu_suffix
 
@@ -74,4 +74,4 @@ LDFLAGS="$LDFLAGS $extend_fw_arg $default_ld_cxx_stdlib_mediaxx -lm" CFLAGS="$CF
 "${MY_NINJA_EXE_DIR}/ninja" -C .
 DESTDIR="$prefix_dir" "${MY_NINJA_EXE_DIR}/ninja" -C . install
 
-(. ../../../../include/backup_dll.sh $prefix_dir/lib/) || true
+# (. ../../../../include/backup_dll.sh $prefix_dir/lib/) || true

@@ -45,9 +45,10 @@ fi
 # 由 mediaxx 静态链接标准库并导出符号，libmpv 动态链接使用
 LDFLAGS="$LDFLAGS -L$prefix_dir/lib/ $default_ld_cxx_stdlib -lm" CFLAGS="$CFLAGS " CXXFLAGS="$CXXFLAGS " meson setup $build \
 	--cross-file "$prefix_dir/crossfile.txt" \
-	--default-library=static \
+	--default-library=shared \
 	--libdir=lib \
 	--prefix=/usr/local \
+	--prefer-static \
     -Dbuildtype=release \
     -Db_lto=true \
 	-Db_lto_mode=default \

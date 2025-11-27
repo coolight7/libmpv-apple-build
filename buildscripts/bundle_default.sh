@@ -37,6 +37,17 @@ fi
 rm -rf $build_home_dir/output/
 mkdir -p $build_home_dir/output/
 
+resetLibDeps() {
+  install_name_tool -change /usr/local/lib/libmpv.2.dylib @loader_path/libmpv.2.dylib       $1
+  install_name_tool -change /usr/local/lib/libavcodec.dylib @loader_path/libavcodec.dylib   $1
+  install_name_tool -change /usr/local/lib/libavfilter.dylib @loader_path/libavfilter.dylib $1
+  install_name_tool -change /usr/local/lib/libavformat.dylib @loader_path/libavformat.dylib $1
+  install_name_tool -change /usr/local/lib/libavutil.dylib @loader_path/libavutil.dylib     $1
+  install_name_tool -change /usr/local/lib/libswresample.dylib @loader_path/libswresample.dylib $1
+  install_name_tool -change /usr/local/lib/libswscale.dylib @loader_path/libswscale.dylib   $1
+  install_name_tool -change /usr/local/lib/libavdevice.dylib @loader_path/libavdevice.dylib $1
+}
+
 copyLib() {
   mkdir -p $build_home_dir/output/$1/
   cp prefix/$1/lib/libmediaxx.dylib               $build_home_dir/output/$1/
@@ -58,6 +69,16 @@ copyLib() {
   install_name_tool -id "@rpath/libavformat.dylib"    $build_home_dir/output/$1/libavformat.dylib   
   install_name_tool -id "@rpath/libavfilter.dylib"    $build_home_dir/output/$1/libavfilter.dylib   
   install_name_tool -id "@rpath/libavdevice.dylib"    $build_home_dir/output/$1/libavdevice.dylib   
+
+  resetLibDeps $build_home_dir/output/$1/libmediaxx.dylib    
+  resetLibDeps $build_home_dir/output/$1/libmpv.2.dylib      
+  resetLibDeps $build_home_dir/output/$1/libswresample.dylib 
+  resetLibDeps $build_home_dir/output/$1/libswscale.dylib    
+  resetLibDeps $build_home_dir/output/$1/libavutil.dylib     
+  resetLibDeps $build_home_dir/output/$1/libavcodec.dylib    
+  resetLibDeps $build_home_dir/output/$1/libavformat.dylib   
+  resetLibDeps $build_home_dir/output/$1/libavfilter.dylib   
+  resetLibDeps $build_home_dir/output/$1/libavdevice.dylib   
 
   strip $build_home_dir/output/$1/*.dylib
 

@@ -61,8 +61,8 @@ fi
 	--pkg-config=pkg-config \
 	--pkg-config-flags=--static \
 	--stdc=c23 --stdcxx=c++23 \
-	--extra-cflags="$CFLAGS -Wno-error=int-conversion -Wno-error=incompatible-pointer-types $cpuflags" \
-	--extra-cxxflags="$CXXFLAGS $cpuflags" \
+	--extra-cflags="$CFLAGS -fno-stack-check -Wno-error=int-conversion -Wno-error=incompatible-pointer-types $cpuflags" \
+	--extra-cxxflags="$CXXFLAGS $cpuflags -fno-stack-check" \
 	--extra-ldflags="$LDFLAGS $default_ld_cxx_stdlib -lc++ -lm -lpthread" \
 	\
 	--enable-gpl \
@@ -70,8 +70,8 @@ fi
 	--enable-version3 \
 	\
     --disable-debug \
-	--disable-shared \
-	--enable-static \
+	--enable-shared \
+	--disable-static \
 	--enable-stripping \
 	--enable-runtime-cpudetect \
 	--enable-pic \
