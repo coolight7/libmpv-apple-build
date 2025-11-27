@@ -62,7 +62,7 @@ LDFLAGS="$LDFLAGS -L$prefix_dir/lib/ $default_ld_cxx_stdlib -lm" CFLAGS="$CFLAGS
 	-Doptimization=3 \
 	-Dlibmpv=true \
  	-Dcplayer=false \
-	-Dgpl=true \
+	-Dgpl=false \
     -Dbuild-date=false \
 	\
 	-Dhtml-build=disabled \

@@ -65,7 +65,7 @@ fi
 	--extra-cxxflags="$CXXFLAGS $cpuflags -fno-stack-check" \
 	--extra-ldflags="$LDFLAGS $default_ld_cxx_stdlib -lc++ -lm -lpthread" \
 	\
-	--enable-gpl \
+	--disable-gpl \
 	--enable-nonfree \
 	--enable-version3 \
 	\
@@ -148,7 +148,6 @@ fi
 	--enable-libsoxr \
 	--enable-libvorbis \
 	--enable-libbs2b \
-	--enable-librubberband \
 	--enable-libvpx \
 	--enable-libwebp \
 	--enable-libdav1d \
@@ -230,7 +229,6 @@ fi
 	--enable-filter=pan \
 	--enable-filter=stereowiden \
 	--enable-filter=stereotools \
-	--enable-filter=rubberband \
 	--enable-filter=volume \
 	--enable-filter=volumedetect \
 	--enable-filter=null,nullsink,nullsrc,anull,anullsink,anullsrc \

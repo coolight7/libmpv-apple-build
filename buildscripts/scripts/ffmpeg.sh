@@ -65,7 +65,7 @@ fi
 	--extra-cxxflags="$CXXFLAGS $cpuflags -fno-stack-check" \
 	--extra-ldflags="$LDFLAGS $default_ld_cxx_stdlib -lc++ -lm -lpthread" \
 	\
-	--enable-gpl \
+	--disable-gpl \
 	--enable-nonfree \
 	--enable-version3 \
 	\
