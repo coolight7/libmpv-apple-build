@@ -148,7 +148,6 @@ fi
 	--enable-libsoxr \
 	--enable-libvorbis \
 	--enable-libbs2b \
-	--enable-librubberband \
 	--enable-libvpx \
 	--enable-libwebp \
 	--enable-libdav1d \
@@ -210,7 +209,6 @@ fi
 	--enable-filter=hwdownload \
 	--enable-filter=hwupload \
 	--enable-filter=copy \
-	--enable-filter=showwavespic \
 	--enable-filter=areverse,reverse \
 	--enable-filter=silencedetect,silenceremove \
 	--enable-filter=acompressor \
@@ -230,7 +228,6 @@ fi
 	--enable-filter=pan \
 	--enable-filter=stereowiden \
 	--enable-filter=stereotools \
-	--enable-filter=rubberband \
 	--enable-filter=volume \
 	--enable-filter=volumedetect \
 	--enable-filter=null,nullsink,nullsrc,anull,anullsink,anullsrc \
@@ -240,6 +237,7 @@ fi
 	--enable-filter=aresample \
 	--enable-filter=sinc \
 	--enable-filter=sine \
+	--enable-filter=vibrato,tremolo \
 	\
 	--disable-protocols \
     --enable-protocol=async,cache,crypto,data,file,hls,pipe,http,https,httpproxy,subfile,tcp,udp,tls

@@ -7,7 +7,7 @@ cleanbuild=0
 clean_lib_ff_mpv=0
 clean_mediaxx=0
 target=mediaxx
-systems=(Darwin iOS)
+systems=(iOS Darwin)
 # archs=(armv7l arm64 x86 x86_64)
 archs=(arm64)
 

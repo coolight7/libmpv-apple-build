@@ -24,6 +24,7 @@ meson setup $build --cross-file "$prefix_dir/crossfile.txt" \
 	-Dtests=disabled \
 	-Ddocs=disabled \
 	-Dicu=disabled \
+	-Dwith_libstdcxx=false \
 	-Dbenchmark=disabled
 
 "${MY_NINJA_EXE_DIR}/ninja" -C $build -j$cores

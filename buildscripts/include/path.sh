@@ -22,6 +22,6 @@ if [ -n "$cpu_triple" ]; then
 fi
 
 export MY_CMAKE_EXE_DIR=/opt/homebrew/bin/
-export MY_NINJA_EXE_DIR=/opt/homebrew/bin/
+export MY_NINJA_EXE_DIR=$build_home_dir/buildscripts/venv/bin/
 
 export PATH="$MY_CMAKE_EXE_DIR:$PATH"
