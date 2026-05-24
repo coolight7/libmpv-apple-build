@@ -195,7 +195,7 @@ while [ $# -gt 0 ]; do
 		-h|--help)
 		usage
 		;;
-		--prebuild-rm-ff-mpv)
+		--prebuild-rm-ffm-mpv-mediaxx)
 		clean_lib_ff_mpv=1
 		rm -rf $source_dir/ffmpeg/_build*
 		rm -rf $source_dir/mpv/_build*

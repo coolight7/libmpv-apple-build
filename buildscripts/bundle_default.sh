@@ -26,7 +26,7 @@ source venv/bin/activate
 # coolight --- temp
 # ./build.sh 
 # ./build.sh --prebuild-rm-mediaxx
-./build.sh --prebuild-rm-ff-mpv
+./build.sh --prebuild-rm-ffm-mpv-mediaxx
 
 if [ $? -ne 0 ]; then
   exit -1
