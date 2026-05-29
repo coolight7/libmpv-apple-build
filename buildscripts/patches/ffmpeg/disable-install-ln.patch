@@ -1,8 +1,8 @@
 diff --git a/ffbuild/library.mak b/ffbuild/library.mak
-index 91daa9c..91ecf9e 100644
+index dee05c5..7bbc68c 100644
 --- a/ffbuild/library.mak
 +++ b/ffbuild/library.mak
-@@ -72,7 +72,7 @@ $(SUBDIR)lib$(NAME).ver: $(SUBDIR)lib$(NAME).v $(OBJS)
+@@ -68,7 +68,7 @@ $(SUBDIR)lib$(NAME).ver: $(SUBDIR)lib$(NAME).v $(OBJS)
  	$$(M)sed 's/MAJOR/$(lib$(NAME)_VERSION_MAJOR)/' $$< | $(VERSION_SCRIPT_POSTPROCESS_CMD) > $$@
  
  $(SUBDIR)$(SLIBNAME): $(SUBDIR)$(SLIBNAME_WITH_MAJOR)
@@ -11,7 +11,7 @@ index 91daa9c..91ecf9e 100644
  
  $(SUBDIR)$(SLIBNAME_WITH_MAJOR): $(OBJS) $(SHLIBOBJS) $(SUBDIR)lib$(NAME).ver
  	$(SLIB_CREATE_DEF_CMD)
-@@ -97,7 +97,7 @@ install-lib$(NAME)-shared: $(SUBDIR)$(SLIBNAME)
+@@ -93,7 +93,7 @@ install-lib$(NAME)-shared: $(SUBDIR)$(SLIBNAME)
  	$(Q)mkdir -p "$(SHLIBDIR)"
  	$$(INSTALL) -m 755 $$< "$(SHLIBDIR)/$(SLIB_INSTALL_NAME)"
  	$$(STRIP) "$(SHLIBDIR)/$(SLIB_INSTALL_NAME)"

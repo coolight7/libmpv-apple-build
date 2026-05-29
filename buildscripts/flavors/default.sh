@@ -159,7 +159,7 @@ fi
 	--enable-zlib \
 	--enable-bzlib \
 	--enable-lzma \
-	--disable-iconv \
+	--enable-iconv \
 	\
 	--disable-d3d11va \
 	--disable-dxva2 \

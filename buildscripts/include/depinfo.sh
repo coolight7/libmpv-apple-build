@@ -14,7 +14,7 @@ v_shaderc=2025.3
 v_dav1d=1.5.2
 v_libxml2=2.15.0
 v_libplacebo=7.351.0
-v_ffmpeg=8.1.1
+v_ffmpeg=8.0.2
 v_mpv=0.41.0
 v_libogg=1.3.6
 v_libvpx=1.14
@@ -64,6 +64,6 @@ dep_libplacebo=(lcms2)
 dep_opus=(opus_dnn)
 
 # 依赖项的依赖已有，则不需要重复依赖编译
-dep_ffmpeg=(libarchive libass uchardet mbedtls dav1d libxml2 libplacebo libvorbis libvpx libbs2b opus libsoxr openssl bzip2 rubberband libmysofa libwebp libjxl libzimg)
+dep_ffmpeg=(libarchive libass libiconv uchardet mbedtls dav1d libxml2 libplacebo libvorbis libvpx libbs2b opus libsoxr openssl bzip2 rubberband libmysofa libwebp libjxl libzimg)
 dep_mpv=(ffmpeg)
 dep_mediaxx=(mpv)

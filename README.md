@@ -20,13 +20,15 @@ pip3 install {需要的库}
 
 ## 可能遇到的问题
 - patch 应用失败
-    - 手动更改之后，git diff 修改patch
+    - 手动更改之后，git diff 修改patch, 更推荐 git diff {file} > diff.txt, 复制 diff.txt
     - 还是不行就照着 patch 内容手动修改
 - 编译报错：
     - 更新 meson 1.8.4 或更高，可以用 pip3 install meson 安装
 ```sh
 Compiling HB for LibreOffice on macOS results in the error "_LIBCPP_ENABLE_ASSERTIONS has been removed, please use _LIBCPP_HARDENING_MODE instead".
 ```
+-   - 编译 mpv 报错，提示 ld 链接时找不到 ffmpeg 动态库 avcodec、avutil 等，但 查看对应目录发现 libavcodec.dylib 存在？
+        - ls -lh libavcodec.dylib 查看是否软链接到它本身了，所以文件实际上时不存在的，则检查 ffmpeg 是否执行 patch 禁用 ln 软链接（buildscripts/patches/ffmpeg/disable-install-ln.patch）
 - macos/ios libmpv 播放就崩溃
     - 崩溃点在文件关闭 close, 一般时调用 avformat_input_close 时，段错误，Sig 11
     - 考虑动态链接 ffmpeg ，一开始我们把所有库都静态链接进 libmpv，整合得到 libmpv.2.dylib，但运行时出现上述错误，稳定崩溃。

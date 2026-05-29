@@ -19,6 +19,7 @@ export NOCONFIGURE=no-config
 mkdir -p _build$cpu_suffix
 cd _build$cpu_suffix
 
+# --ranlib="$RANLIB" --ar="$AR" --cc="$CC" --cxx="$CXX" \
 CONF=1 ../configure \
 	--host=$cpu_triple \
     --disable-shared \

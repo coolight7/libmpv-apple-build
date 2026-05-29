@@ -43,7 +43,7 @@ fi
 
 # c++std: libjxl、shaderc
 # 由 mediaxx 静态链接标准库并导出符号，libmpv 动态链接使用
-LDFLAGS="$LDFLAGS -L$prefix_dir/lib/ $default_ld_cxx_stdlib -lm" CFLAGS="$CFLAGS " CXXFLAGS="$CXXFLAGS " meson setup $build \
+LDFLAGS="$LDFLAGS -L$prefix_dir/lib/ $default_ld_cxx_stdlib -lm -liconv" CFLAGS="$CFLAGS " CXXFLAGS="$CXXFLAGS " meson setup $build \
 	--cross-file "$prefix_dir/crossfile.txt" \
 	--default-library=shared \
 	--libdir=lib \
@@ -55,6 +55,8 @@ LDFLAGS="$LDFLAGS -L$prefix_dir/lib/ $default_ld_cxx_stdlib -lm" CFLAGS="$CFLAGS
 	-Db_ndebug=true \
 	-Dc_args="$CFLAGS " \
 	-Dcpp_args="$CXXFLAGS " \
+	-Dc_link_args="-L$prefix_dir/lib/ -lm -liconv" \
+	-Dcpp_link_args="-L$prefix_dir/lib/ -lm -liconv" \
 	-Dobjc_args="-F$sysroot_dir/System/Library/Frameworks/ -I$sysroot_dir/usr/include -I$prefix_dir/include" \
 	-Dobjcpp_args="-F$sysroot_dir/System/Library/Frameworks/ -I$sysroot_dir/usr/include -I$prefix_dir/include" \
 	-Dswift-flags="-target $target_os -sdk $sysroot_dir -sysroot $sysroot_dir -F$sysroot_dir/System/Library/Frameworks/ -I$sysroot_dir/usr/include -I$prefix_dir/include" \
@@ -76,9 +78,9 @@ LDFLAGS="$LDFLAGS -L$prefix_dir/lib/ $default_ld_cxx_stdlib -lm" CFLAGS="$CFLAGS
 	-Dlibbluray=disabled \
 	-Ddvdnav=disabled \
 	-Dvapoursynth=disabled \
-	-Duchardet=disabled \
 	\
-	-Diconv=disabled \
+	-Duchardet=enabled \
+	-Diconv=enabled \
 	-Dlibarchive=enabled \
 	-Drubberband=enabled \
 	-Dlcms2=enabled \
