@@ -23,6 +23,8 @@ cp flavors/default.sh scripts/ffmpeg.sh
 # --------------------------------------------------
 source venv/bin/activate
 
+cd deps/mediaxx && git pull && git submodule update --init && cd -
+
 # coolight --- temp
 # ./build.sh 
 ./build.sh --prebuild-rm-mediaxx
