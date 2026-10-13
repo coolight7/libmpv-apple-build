@@ -20,9 +20,6 @@ if [ $TRAVIS -eq 0 ]; then
 fi
 # pip3 install jinja2
 
-
-os_ndk="linux"
-
 # gas-preprocessor
 mkdir -p bin
 $WGET "https://github.com/FFmpeg/gas-preprocessor/raw/master/gas-preprocessor.pl" \

@@ -36,7 +36,7 @@ gsed -i '/^Libs/ s|-lc++| |' $prefix_dir/lib/pkgconfig/*.pc
 # mpv: --prefer-static
 
 export PKG_CONFIG_SYSROOT_DIR="$prefix_dir"
-export PKG_CONFIG_LIBDIR="$prefix_dir/usr/lib/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/lib/x86_64-linux-gnu/pkgconfig:/usr/local/share/pkgconfig:/usr/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig"
+export PKG_CONFIG_LIBDIR="$prefix_dir/usr/lib/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/share/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig"
 
 extend_fw_arg=
 if [[ "$current_target_os" == "iOS" ]]; then
