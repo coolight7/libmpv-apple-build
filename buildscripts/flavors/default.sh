@@ -53,6 +53,9 @@ fi
 # - 链接c++标准库时，如果需要静态链接：
 # 	--extra-ldflags="-L$prefix_dir/lib -lm -nostdlib++ -lc++_static -lc++abi"
 # - [vulkan] 会增加 5mb 左右的大小
+# - metal / appkit / coreimage / avfoundation 在本项目里没有使用者：它们只服务
+#   yadif_videotoolbox、coreimage 这些滤镜和 avfoundation 输入输出设备，而滤镜与设备都在白名单里关掉了。
+#   显式关闭可以让 configure 少做几次框架探测，也避免链接这些用不到的框架
 # --disable-shared --enable-static：只产出静态库（libav*.a），和静态 libmpv 一起由 mediaxx
 # 合并成单个 libmediaxx.dylib，不再产出 libav*.dylib
 ../configure $extend_args \
@@ -173,6 +176,10 @@ fi
 	--disable-mediacodec \
 	--disable-vulkan \
     --disable-vulkan-static \
+	--disable-metal \
+	--disable-appkit \
+	--disable-coreimage \
+	--disable-avfoundation \
 	--enable-videotoolbox \
 	--enable-audiotoolbox \
 	\

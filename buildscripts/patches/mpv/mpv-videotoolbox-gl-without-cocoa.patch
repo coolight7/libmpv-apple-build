@@ -1,0 +1,45 @@
+macOS 上让 libmpv（plain-gl / OpenGL 渲染 API）也能用 VideoToolbox 零拷贝硬解。
+
+背景：
+- VideoToolbox 帧 → GL 纹理的代码是 video/out/hwdec/hwdec_mac_gl.c，
+  它只用 CGLGetCurrentContext() + CGLTexImageIOSurface2D / IOSurface，不需要 cocoa 窗口；
+- 但上游把 videotoolbox-gl 的启用条件写成「必须有 gl-cocoa 或 ios-gl」，
+  而 gl-cocoa 又要求 cocoa，会连带把 AppKit 那一整套编进 libmpv；
+  更麻烦的是 cocoa 需要 mpv 的 Swift 部分：osdep/mac/app_bridge.m 里
+  cocoa_init_media_keys / cocoa_uninit_media_keys / cocoa_set_input_context /
+  cocoa_set_mpv_handle 只在 #if HAVE_SWIFT 下才有定义，而 input/input.c、player/main.c
+  在 #if HAVE_COCOA 下就会调用它们，只开 cocoa 不开 swift 时链接 libmediaxx.dylib 会报
+  「Undefined symbols ... _cocoa_init_media_keys」。
+- 所以这里不放宽 cocoa，只放宽 videotoolbox-gl：macOS 上 gl（plain-gl）可用即可启用。
+
+另外补两个框架依赖，它们只被 hwdec_mac_gl.c 使用，缺一个都会在链接时报未定义符号：
+- OpenGL：CGLTexImageIOSurface2D、CGLGetCurrentContext（gl-cocoa 路径本来就会带）
+- IOSurface：IOSurfaceGetWidthOfPlane 等（CoreVideo 不会 re-export，必须显式链接）
+
+diff --git a/meson.build b/meson.build
+--- a/meson.build
++++ b/meson.build
+@@ -1545,7 +1545,9 @@
+ endif
+ 
+ videotoolbox_gl = get_option('videotoolbox-gl').require(
+-    features['gl-cocoa'] or features['ios-gl'],
++    # hwdec_mac_gl.c 用 CGL + IOSurface 把 VideoToolbox 的帧映射成 GL 纹理，和 cocoa 窗口无关，
++    # libmpv 走 plain-gl（OpenGL 渲染 API）时也应该能用，否则嵌入式 libmpv 在 macOS 上拿不到零拷贝硬解
++    features['gl-cocoa'] or features['ios-gl'] or (darwin and features['gl']),
+     error_message: 'gl-cocoa nor ios-gl could be found!',
+ )
+ features += {'videotoolbox-gl': videotoolbox_gl.allowed()}
+@@ -1560,6 +1562,12 @@
+     sources += files('video/out/hwdec/hwdec_vt.c')
+ endif
+ if features['videotoolbox-gl']
++    if darwin
++        # hwdec_mac_gl.c 直接调用 CGLTexImageIOSurface2D / IOSurfaceGetWidthOfPlane，
++        # 需要 OpenGL 与 IOSurface 两个框架（gl-cocoa 只会带上前者），这里一起补上，
++        # 由 mpv.pc 的 Libs 传给使用方；CoreVideo 不会把这些符号带进来，必须显式链接
++        dependencies += dependency('appleframeworks', modules: ['OpenGL', 'IOSurface'])
++    endif
+     sources += files('video/out/hwdec/hwdec_mac_gl.c')
+ endif
+ if features['videotoolbox-pl']

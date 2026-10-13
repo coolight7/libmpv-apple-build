@@ -31,6 +31,16 @@ mpv_EXPORT_IDS=$build_home_dir/buildscripts/mpv-export.lds
 export C_INCLUDE_PATH=$prefix_dir/include:$C_INCLUDE_PATH
 export CPLUS_INCLUDE_PATH=$sysroot_dir/usr/include/c++/v1:$prefix_dir/include:$CPLUS_INCLUDE_PATH
 
+# 零拷贝硬解（--hwdec=videotoolbox）说明：
+# - macOS：把 VideoToolbox 的帧直接映射成 GL 纹理的代码是 video/out/hwdec/hwdec_mac_gl.c，
+#   它只用 CGL + IOSurface，不需要 cocoa 窗口；但上游要求先有 gl-cocoa（进而要求 cocoa，
+#   会把 AppKit 那一整套编进 libmpv，并且 cocoa 还需要 mpv 的 Swift 部分才不会缺符号）。
+#   我们用 libmpv 的 OpenGL 渲染 API（plain-gl），所以这里 cocoa / gl-cocoa 保持关闭，
+#   只打开 videotoolbox-gl；meson 里放宽启用条件的补丁见
+#   patches/mpv/mpv-videotoolbox-gl-without-cocoa.patch
+# - iOS：零拷贝由 ios-gl 提供（已开启），不要开 videotoolbox-gl：
+#   那会去编译 macOS 专用的 hwdec_mac_gl.c，而 iOS SDK 没有 OpenGL.framework，必然编译失败
+# - videotoolbox-pl 需要 vulkan（libplacebo 也要带 vulkan），本项目不做，保持关闭
 target_os=
 target_options=
 if [[ "$current_target_os" == "iOS" ]]; then
@@ -38,7 +48,7 @@ if [[ "$current_target_os" == "iOS" ]]; then
 	target_options="-Dcoreaudio=disabled -Daudiounit=enabled -Davfoundation=disabled -Dios-gl=enabled -Dcocoa=disabled -Dgl-cocoa=disabled -Dvideotoolbox-gl=disabled -Dvideotoolbox-pl=disabled -Dmacos-cocoa-cb=disabled -Dswift-build=disabled"
 else 
 	target_os=arm64-apple-macos11.0
-	target_options="-Dcoreaudio=enabled -Daudiounit=disabled -Davfoundation=enabled -Dios-gl=disabled -Dcocoa=disabled -Dgl-cocoa=disabled -Dvideotoolbox-gl=disabled -Dvideotoolbox-pl=disabled -Dmacos-cocoa-cb=disabled -Dswift-build=disabled"
+	target_options="-Dcoreaudio=enabled -Daudiounit=disabled -Davfoundation=enabled -Dios-gl=disabled -Dcocoa=disabled -Dgl-cocoa=disabled -Dvideotoolbox-gl=enabled -Dvideotoolbox-pl=disabled -Dmacos-cocoa-cb=disabled -Dswift-build=disabled"
 fi
 
 # c++std: libjxl、shaderc

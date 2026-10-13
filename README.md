@@ -40,6 +40,26 @@ cd test/runtime-check && ./run.sh  # 运行时检查：读媒体信息 x40 + 播
 - 应用侧注意：`mpv_*` 在这个库里是导出符号，原来用 `DynamicLibrary.open('libmpv.2.dylib')`
   加载 mpv 的地方要改成打开 `libmediaxx.dylib`，否则会找不到 mpv 接口
 
+## 更新记录：macOS 零拷贝硬解（VideoToolbox → GL）
+- macOS 打开 `videotoolbox-gl`，`hwdec=auto` 现在会选中零拷贝的 `videotoolbox`，不再是回拷的 `videotoolbox-copy`
+    - 新增补丁 `patches/mpv/mpv-videotoolbox-gl-without-cocoa.patch`：
+      上游要求先有 `gl-cocoa`（进而要求 `cocoa`），但这段互操作代码（`video/out/hwdec/hwdec_mac_gl.c`）
+      只用 CGL + IOSurface，和 cocoa 窗口无关；而只开 `cocoa` 不开 `swift-build` 还会链接失败——
+      `osdep/mac/app_bridge.m` 里 `cocoa_init_media_keys` / `cocoa_uninit_media_keys` /
+      `cocoa_set_input_context` / `cocoa_set_mpv_handle` 只在 `#if HAVE_SWIFT` 下定义，
+      而 `input/input.c`、`player/main.c` 在 `#if HAVE_COCOA` 下就会调用它们
+    - 补丁把启用条件放宽为「macOS 上 `gl` 可用」，并补上 `-framework OpenGL` 与 `-framework IOSurface`
+      （只被 `hwdec_mac_gl.c` 用到；CoreVideo 不会 re-export IOSurface，少了它链接会报 `_IOSurfaceGetWidthOfPlane` 未定义）
+    - 检查方式：播放时读 mpv 属性，`hwdec-current` / `hwdec-interop` 应该是 `videotoolbox`；
+      用 `hwdec=videotoolbox-copy` 还能对退回拷路径
+- iOS 不动：零拷贝由 `ios-gl` 提供；iOS 不能开 `videotoolbox-gl`，那会去编译 macOS 专用的
+  `hwdec_mac_gl.c`，而 iOS SDK 没有 `OpenGL.framework`，必然编译失败
+- 产物变化只有 macOS：新增依赖 `/System/Library/Frameworks/OpenGL.framework`、`IOSurface.framework`，
+  大小约 +17KB，导出符号仍是 66 个（未变）
+- ffmpeg 显式关闭 `--disable-metal --disable-appkit --disable-coreimage --disable-avfoundation`：
+  这几个只有 `yadif_videotoolbox`、`coreimage` 滤镜和 avfoundation 输入输出设备用到，本项目都没开，属于空配置
+- 删掉 `crossfiles/macos-arm64.ini` 里没有作用的 `frameworks = [...]`（meson 不读 `[properties]` 里的这个键）
+
 ## 更新记录：ffmpeg 9.0.1 / mpv 分支 / 依赖库 / mediaxx
 - ffmpeg 由 `8.0.2` 更新到 `9.0.1`
     - 删除 `--disable-libshaderc`：ffmpeg 9 已移除该选项，留在 configure 里会直接以 "Unknown option" 退出
