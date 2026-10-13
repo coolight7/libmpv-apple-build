@@ -57,6 +57,6 @@ clang++ -std=c++17 -O1 -g \
     check_single_lib.cpp \
     -lmediaxx
 
-echo "运行: 读媒体信息 x$INFO_ROUNDS，播放并关闭 x$PLAY_ROUNDS"
+echo "运行: 读媒体信息 x${INFO_ROUNDS}，播放并关闭 x${PLAY_ROUNDS}"
 echo "--------------------------------------------------------------"
 "$work_dir/check_single_lib" "$MEDIA_FILE" "$INFO_ROUNDS" "$PLAY_ROUNDS"
