@@ -18,6 +18,35 @@ pip3 install {需要的库}
 - 执行编译 ./bundle_default.sh
 - 编译结果在 ${项目根目录}/output/
 
+## 更新记录：ffmpeg 9.0.1 / mpv 分支 / 依赖库 / mediaxx
+- ffmpeg 由 `8.0.2` 更新到 `9.0.1`
+    - 删除 `--disable-libshaderc`：ffmpeg 9 已移除该选项，留在 configure 里会直接以 "Unknown option" 退出
+    - 新增动态 WebP（`--enable-decoder=webp_anim`、`--enable-demuxer=webp_anim`）、Dolby Vision 双层拆分（`--enable-bsf=dovi_split`），音频滤镜补上 `afade`
+    - 清理失效条目：`--enable-decoder=sonic`（9.0.1 已移除该解码器）、`--enable-demuxer=afx`（上游从未提供）、`--enable-protocol=hls`（hls 是解复用器，不是协议）；同时删除整段早已失效的 `--disable-decoder=` 列表
+    - 删除已被 ffmpeg 上游修复的补丁：`dash_base_url_escape.patch`、`flac-id3-extmeta.patch`
+    - `remove-dll-version.patch`、`id3v2-picture.patch`、`disable-install-ln.patch` 已按 9.0.1 源码重新生成
+- mpv 改用我们自己的分支 `https://github.com/coolight7/mpv`（master 分支），并按新版 mpv 的 meson 选项补充 `tests`、`dvbin`、`cdda`、`jpeg`、`subrandr` 的关闭项
+- 依赖库版本更新：libass 0.17.5、libunibreak 7.0、harfbuzz 14.4.0、freetype 2-14-3、mbedtls 3.6.7、dav1d 1.5.4、libxml2 2.15.4、libplacebo 7.360.1（新版 mpv 要求 libplacebo 不低于 7.360.1）
+- mediaxx 依旧在编译时 `git pull` 跟随上游 main
+- 修正 `build.sh` 的 C 编译参数：`-include cstddef` 是 C++ 头文件，放进 CFLAGS 会让 ffmpeg 的 C 编译器测试直接失败，现在只保留在 CXXFLAGS 中
+- 实编过程中一并修掉的问题：
+    - `include/path.sh`：把 venv 的 ninja 目录加进 PATH，这样不先 `source venv/bin/activate` 直接跑 `./build.sh` 也不会报 “CMake was unable to find a build program corresponding to Ninja”
+    - `crossfiles/*.ini`：`cpp_args`/`objcpp_args` 增加 `-include cstddef`。meson 交叉编译只读 crossfile，不读环境变量 CXXFLAGS，所以 rubberband 这类没有 `#include <cstddef>` 的 C++ 依赖会报 `unknown type name 'size_t'`，必须写进 crossfile 才生效
+    - `bundle_default.sh`：`strip` 改成 `strip -x`，新版 Xcode 下不再报 “symbols referenced by indirect symbol table entries that can't be stripped”，并且 libmpv/libmediaxx 能真正瘦身
+    - `bundle_default.sh`：不再打包 macOS x86_64（Intel）目标，`copyLib` 对未编译的目标自动跳过
+
+依赖库版本变化后，旧的 deps 目录与 prefix 目录不能继续使用，需要重新下载并全量重编译：
+```sh
+cd ${项目根目录}/buildscripts/
+# download.sh 只在目录不存在时才 clone，所以旧的 deps 必须先删除
+# （上一次编译留下的 deps/prefix 是 root 权限，需要 sudo 删除）
+sudo rm -rf deps prefix
+./download.sh
+./patch.sh
+# 全量重新编译 ffmpeg、libmpv、mediaxx
+./build.sh --prebuild-rm-ffm-mpv-mediaxx
+```
+
 ## 可能遇到的问题
 - patch 应用失败
     - 手动更改之后，git diff 修改patch, 更推荐 git diff {file} > diff.txt, 复制 diff.txt

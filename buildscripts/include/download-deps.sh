@@ -28,7 +28,7 @@ mkdir -p deps && cd deps
 [ ! -d libx264 ] && git clone --depth 1 https://code.videolan.org/videolan/x264.git --branch master libx264
 
 # libzimg
-[ ! -d libzimg ] && git clone --depth 1 --recurse-submodules https://bitbucket.org/the-sekrit-twc/zimg.git libzimg
+[ ! -d libzimg ] && git clone --depth 1 --recurse-submodules https://github.com/sekrit-twc/zimg libzimg
 
 # ffmpeg
 [ ! -d ffmpeg ] && git clone --depth 1 --branch n$v_ffmpeg https://github.com/FFmpeg/FFmpeg.git ffmpeg
@@ -101,7 +101,7 @@ HEREDOC
 [ ! -d bzip2 ] && git clone --depth 1 https://gitlab.com/bzip2/bzip2.git bzip2
 
 # lzo
-[ ! -d lzo ] && $WGET https://fossies.org/linux/misc/lzo-2.10.tar.gz && tar -zxvf lzo-2.10.tar.gz && mv lzo-2.10 lzo && rm lzo-2.10.tar.gz
+[ ! -d lzo ] && $WGET https://www.oberhumer.com/opensource/lzo/download/lzo-2.10.tar.gz && tar -zxvf lzo-2.10.tar.gz && mv lzo-2.10 lzo && rm lzo-2.10.tar.gz
 
 # uchardet
 [ ! -d uchardet ] && git clone --depth 1 https://gitlab.freedesktop.org/uchardet/uchardet.git uchardet
@@ -143,14 +143,18 @@ HEREDOC
 [ ! -d libarchive ] && git clone --depth 1 https://github.com/libarchive/libarchive.git libarchive
 
 # libjxl
-[ ! -d libjxl ] && git clone --depth 1 https://github.com/libjxl/libjxl.git libjxl && cd libjxl && git submodule update --init && cd ..
-cd libjxl && rm -rf ./third_party/libjpeg-turbo && ln -s ../libjpeg ./third_party/libjpeg-turbo && cd ..
+if [ ! -d libjxl ]; then
+	git clone --depth 1 https://github.com/libjxl/libjxl.git libjxl
+	(cd libjxl && git submodule update --init)
+fi
+(cd libjxl && rm -rf ./third_party/libjpeg-turbo && ln -sf ../../libjpeg ./third_party/libjpeg-turbo)
 
 # brotli
 [ ! -d brotli ] && git clone --depth 1 https://github.com/google/brotli.git brotli
 
 # mpv
-[ ! -d mpv ] && git clone --depth 1 --branch v$v_mpv https://github.com/mpv-player/mpv.git mpv
+# 使用我们自己的分支（跟随 mpv master，配合新版 ffmpeg 与自定义功能）
+[ ! -d mpv ] && git clone --depth 1 --branch master https://github.com/coolight7/mpv mpv
 
 # mediaxx
 [ ! -d mediaxx ] && git clone --depth 1 https://github.com/coolight7/mediaxx mediaxx

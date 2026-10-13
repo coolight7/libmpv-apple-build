@@ -1,28 +1,22 @@
 diff --git a/meson.build b/meson.build
-index fb10be5..0baa241 100644
+index 80bd39d..79d5527 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -412,6 +412,7 @@ cocoa = dependency('appleframeworks', modules: ['Cocoa', 'IOKit', 'QuartzCore'],
+@@ -429,6 +429,8 @@ cocoa = dependency('appleframeworks', modules: ['Cocoa', 'IOKit', 'QuartzCore'],
                     required: get_option('cocoa'))
  features += {'cocoa': cocoa.found()}
  if features['cocoa']
++    # 交叉编译（iOS/macOS）时 meson 默认不会加入 objc 语言，这里显式加入，否则 .m 源码无法编译
 +    add_languages('objc')
      dependencies += cocoa
      path_source += files('osdep/path-mac.m')
      sources += files('osdep/language-mac.c',
-@@ -811,6 +812,7 @@ audiounit = {
+@@ -839,6 +841,8 @@ audiounit = {
  }
  features += {'audiounit': audiounit['deps'].found() and audiounit['symbol']}
  if features['audiounit']
++    # 同上：ao_audiounit.m 需要 objc 语言
 +    add_languages('objc')
      dependencies += audiounit['deps']
      sources += files('audio/out/ao_audiounit.m')
  endif
-@@ -1547,6 +1549,7 @@ if macos_sdk_version != '0.0'
-     add_languages('objc', native: false)
-     objc_link_flags = ['-isysroot', macos_sdk_path, '-L/usr/lib', '-L/usr/local/lib']
-     add_project_link_arguments(objc_link_flags, language: ['c', 'objc'])
-+    sources += files('osdep/utils-mac.c')
- endif
- 
- swift = get_option('swift-build').require(

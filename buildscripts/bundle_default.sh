@@ -26,9 +26,10 @@ source venv/bin/activate
 cd deps/mediaxx && git pull && git submodule update --init && cd -
 
 # coolight --- temp
-# ./build.sh 
-./build.sh --prebuild-rm-mediaxx
-# ./build.sh --prebuild-rm-ffm-mpv-mediaxx
+# 本次更新（ffmpeg 9.0.1 / 依赖库 / mpv 分支 / mediaxx）需要重新编译 ffmpeg、libmpv、mediaxx
+./build.sh --prebuild-rm-ffm-mpv-mediaxx
+# ./build.sh --prebuild-rm-mediaxx # 只清理 mediaxx 重新编译
+# ./build.sh
 
 if [ $? -ne 0 ]; then
   exit -1
@@ -51,6 +52,12 @@ resetLibDeps() {
 }
 
 copyLib() {
+  # 只处理已经编译出的目标（arm64 的 iOS / Darwin），未编译的目标直接跳过
+  if [ ! -d "prefix/$1/lib" ]; then
+    echo "skip $1: prefix/$1/lib 不存在"
+    return 0
+  fi
+
   mkdir -p $build_home_dir/output/$1/
   cp prefix/$1/lib/libmediaxx.dylib               $build_home_dir/output/$1/
   cp prefix/$1/lib/libmpv.2.dylib                 $build_home_dir/output/$1/
@@ -82,7 +89,8 @@ copyLib() {
   resetLibDeps $build_home_dir/output/$1/libavfilter.dylib   
   resetLibDeps $build_home_dir/output/$1/libavdevice.dylib   
 
-  strip $build_home_dir/output/$1/*.dylib
+  # 直接 strip 在新版 Xcode 上会因间接符号表报错且不去符号，-x 只去掉局部符号
+  strip -x $build_home_dir/output/$1/*.dylib
 
   cp $build_home_dir/help/*                    $build_home_dir/output/$1/
 	pushd $build_home_dir/output/$1/
@@ -92,7 +100,7 @@ copyLib() {
 
 copyLib iOS/arm64
 copyLib Darwin/arm64
-copyLib Darwin/x86_64
+# macOS x86_64（Intel）已不再支持，不再拷贝
 
 echo "current dir: vvvvvvvvvvvvvvvvvvvv"
 pwd

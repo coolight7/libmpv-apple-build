@@ -74,9 +74,14 @@ LDFLAGS="$LDFLAGS -L$prefix_dir/lib/ $default_ld_cxx_stdlib -lm -liconv" CFLAGS=
 	-Dcplugins=disabled \
 	-Dlua=disabled \
 	-Djavascript=disabled \
+	-Dtests=false \
+	-Dsubrandr=disabled \
 	\
 	-Dlibbluray=disabled \
 	-Ddvdnav=disabled \
+	-Ddvbin=disabled \
+	-Dcdda=disabled \
+	-Djpeg=disabled \
 	-Dvapoursynth=disabled \
 	\
 	-Duchardet=enabled \

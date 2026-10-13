@@ -24,4 +24,5 @@ fi
 export MY_CMAKE_EXE_DIR=/opt/homebrew/bin/
 export MY_NINJA_EXE_DIR=$build_home_dir/buildscripts/venv/bin/
 
-export PATH="$MY_CMAKE_EXE_DIR:$PATH"
+# cmake 需要能在 PATH 里找到 ninja（先找 venv 里的），这样不必先 source venv/bin/activate
+export PATH="$MY_NINJA_EXE_DIR:$MY_CMAKE_EXE_DIR:$PATH"
