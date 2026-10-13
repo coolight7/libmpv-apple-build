@@ -1,5 +1,8 @@
 # --------------------------------------------------
 
+# 编译产物固定为单个 libmediaxx.dylib：
+# ffmpeg（libav*.a）与 libmpv（libmpv.a）都编成静态库，由 mediaxx 合并成一个动态库
+
 export build_home_dir="$PWD/../"
 
 # TODO: coolight --- temp
@@ -40,67 +43,37 @@ fi
 rm -rf $build_home_dir/output/
 mkdir -p $build_home_dir/output/
 
-resetLibDeps() {
-  install_name_tool -change /usr/local/lib/libmpv.2.dylib @loader_path/libmpv.2.dylib       $1
-  install_name_tool -change /usr/local/lib/libavcodec.dylib @loader_path/libavcodec.dylib   $1
-  install_name_tool -change /usr/local/lib/libavfilter.dylib @loader_path/libavfilter.dylib $1
-  install_name_tool -change /usr/local/lib/libavformat.dylib @loader_path/libavformat.dylib $1
-  install_name_tool -change /usr/local/lib/libavutil.dylib @loader_path/libavutil.dylib     $1
-  install_name_tool -change /usr/local/lib/libswresample.dylib @loader_path/libswresample.dylib $1
-  install_name_tool -change /usr/local/lib/libswscale.dylib @loader_path/libswscale.dylib   $1
-  install_name_tool -change /usr/local/lib/libavdevice.dylib @loader_path/libavdevice.dylib $1
-}
-
+# 打包：ffmpeg + libmpv + 其他依赖都已经合并进 libmediaxx.dylib，输出目录里只有这一个库
 copyLib() {
-  # 只处理已经编译出的目标（arm64 的 iOS / Darwin），未编译的目标直接跳过
-  if [ ! -d "prefix/$1/lib" ]; then
-    echo "skip $1: prefix/$1/lib 不存在"
+  if [ ! -f "prefix/$1/lib/libmediaxx.dylib" ]; then
+    echo "skip $1: prefix/$1/lib/libmediaxx.dylib 不存在"
     return 0
   fi
 
+  # 打包之前先检查有没有会被错误解析的同名符号：
+  # 这类问题编译能过，但运行时一走到那条路径就崩，必须提前拦住
+  # 用 bash 调用，避免脚本没有可执行位时直接报 Permission denied
+  if ! bash ./check-single-lib-symbols.sh "prefix/$1"; then
+    echo "错误: $1 的符号检查未通过，不打包。修掉上面列出的同名符号后重新编译。" >&2
+    exit 1
+  fi
+
   mkdir -p $build_home_dir/output/$1/
-  cp prefix/$1/lib/libmediaxx.dylib               $build_home_dir/output/$1/
-  cp prefix/$1/lib/libmpv.2.dylib                 $build_home_dir/output/$1/
-  cp prefix/$1/lib/libswresample.dylib            $build_home_dir/output/$1/
-  cp prefix/$1/lib/libswscale.dylib               $build_home_dir/output/$1/
-  cp prefix/$1/lib/libavutil.dylib                $build_home_dir/output/$1/
-  cp prefix/$1/lib/libavcodec.dylib               $build_home_dir/output/$1/
-  cp prefix/$1/lib/libavformat.dylib              $build_home_dir/output/$1/
-  cp prefix/$1/lib/libavfilter.dylib              $build_home_dir/output/$1/
-  cp prefix/$1/lib/libavdevice.dylib              $build_home_dir/output/$1/
-
-  install_name_tool -id "@rpath/libmediaxx.dylib"     $build_home_dir/output/$1/libmediaxx.dylib    
-  install_name_tool -id "@rpath/libmpv.2.dylib"       $build_home_dir/output/$1/libmpv.2.dylib      
-  install_name_tool -id "@rpath/libswresample.dylib"  $build_home_dir/output/$1/libswresample.dylib 
-  install_name_tool -id "@rpath/libswscale.dylib"     $build_home_dir/output/$1/libswscale.dylib    
-  install_name_tool -id "@rpath/libavutil.dylib"      $build_home_dir/output/$1/libavutil.dylib     
-  install_name_tool -id "@rpath/libavcodec.dylib"     $build_home_dir/output/$1/libavcodec.dylib    
-  install_name_tool -id "@rpath/libavformat.dylib"    $build_home_dir/output/$1/libavformat.dylib   
-  install_name_tool -id "@rpath/libavfilter.dylib"    $build_home_dir/output/$1/libavfilter.dylib   
-  install_name_tool -id "@rpath/libavdevice.dylib"    $build_home_dir/output/$1/libavdevice.dylib   
-
-  resetLibDeps $build_home_dir/output/$1/libmediaxx.dylib    
-  resetLibDeps $build_home_dir/output/$1/libmpv.2.dylib      
-  resetLibDeps $build_home_dir/output/$1/libswresample.dylib 
-  resetLibDeps $build_home_dir/output/$1/libswscale.dylib    
-  resetLibDeps $build_home_dir/output/$1/libavutil.dylib     
-  resetLibDeps $build_home_dir/output/$1/libavcodec.dylib    
-  resetLibDeps $build_home_dir/output/$1/libavformat.dylib   
-  resetLibDeps $build_home_dir/output/$1/libavfilter.dylib   
-  resetLibDeps $build_home_dir/output/$1/libavdevice.dylib   
-
+  cp prefix/$1/lib/libmediaxx.dylib $build_home_dir/output/$1/
+  install_name_tool -id "@rpath/libmediaxx.dylib" $build_home_dir/output/$1/libmediaxx.dylib
   # 直接 strip 在新版 Xcode 上会因间接符号表报错且不去符号，-x 只去掉局部符号
-  strip -x $build_home_dir/output/$1/*.dylib
+  strip -x $build_home_dir/output/$1/libmediaxx.dylib
 
-  cp $build_home_dir/help/*                    $build_home_dir/output/$1/
-	pushd $build_home_dir/output/$1/
-  ./create_comm_syms.sh
+  # 导出符号就是 libmediaxx.dylib 自己导出的（mediaxx_* 与 mpv_*），用 macOS 自带 nm 导出清单
+  pushd $build_home_dir/output/$1/
+  nm -gU libmediaxx.dylib | awk '{print $NF}' | sort -u > libmediaxx_def_syms.txt
+  echo "导出符号数量: $(wc -l < libmediaxx_def_syms.txt)"
   popd
 }
 
+# macOS x86_64（Intel）已不再支持，只打包 arm64 的 iOS / Darwin
 copyLib iOS/arm64
 copyLib Darwin/arm64
-# macOS x86_64（Intel）已不再支持，不再拷贝
 
 echo "current dir: vvvvvvvvvvvvvvvvvvvv"
 pwd

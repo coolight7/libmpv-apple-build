@@ -53,6 +53,8 @@ fi
 # - 链接c++标准库时，如果需要静态链接：
 # 	--extra-ldflags="-L$prefix_dir/lib -lm -nostdlib++ -lc++_static -lc++abi"
 # - [vulkan] 会增加 5mb 左右的大小
+# --disable-shared --enable-static：只产出静态库（libav*.a），和静态 libmpv 一起由 mediaxx
+# 合并成单个 libmediaxx.dylib，不再产出 libav*.dylib
 ../configure $extend_args \
 	--target-os=darwin --arch=${cpu_triple%%-*} --cpu=$cpu \
 	--nm="$NM" --strip=strip --ranlib="$RANLIB" --ar="$AR" --cc="$CC" --cxx="$CXX" \
@@ -70,8 +72,8 @@ fi
 	--enable-version3 \
 	\
     --disable-debug \
-	--enable-shared \
-	--disable-static \
+	--disable-shared \
+	--enable-static \
 	--enable-stripping \
 	--enable-runtime-cpudetect \
 	--enable-pic \

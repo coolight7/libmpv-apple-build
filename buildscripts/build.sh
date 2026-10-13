@@ -144,7 +144,8 @@ build () {
 
 	printf >&2 '\e[1;34m%s\e[m\n' "Building $1..."
 
-	if [[ -f "$prefix_dir/lib/$1.a" 
+	# ffmpeg / mpv 固定只产出静态库，用 libavfilter.a / libmpv.a 判断是否已经编译过
+	if [[ ( "$1" != "ffmpeg" && "$1" != "mpv" && -f "$prefix_dir/lib/$1.a" )
 		|| -f "$prefix_dir/lib/lib$1.a" 
 		|| ( $1 == "lzo" && -f "$prefix_dir/lib/liblzo2.a" ) 
 		|| ( $1 == "zlib" && -f "$prefix_dir/lib/libz.a" ) 
@@ -155,11 +156,8 @@ build () {
 		|| ( $1 == "shaderc" && -f "$prefix_dir/lib/libshaderc_combined.a" ) 
 		|| ( $1 == "spirv_cross" && -f "$prefix_dir/lib/libspirv-cross-c.a" ) 
 		|| ( $1 == "openssl" && -f "$prefix_dir/lib/libssl.a" ) 
-		# || ( $1 == "ffmpeg")
-		|| ( $1 == "ffmpeg" && -f "$prefix_dir/lib/libavfilter.a") 
-		|| ( $1 == "ffmpeg" && -f "$prefix_dir/lib/libavfilter.dylib")
+		|| ( $1 == "ffmpeg" && -f "$prefix_dir/lib/libavfilter.a" ) 
 		|| ( $1 == "mpv" && -f "$prefix_dir/lib/libmpv.a" ) 
-		|| ( $1 == "mpv" && -f "$prefix_dir/lib/libmpv.dylib" ) 
 		]]; then
 		printf >&2 '\e[1;30m%s\e[m\n' "-  Have $1. a/dylib, skip."
 		return
@@ -178,6 +176,7 @@ usage () {
 	printf '%s\n' \
 		"Usage: build.sh [options] [target]" \
 		"Builds the specified target (default: $target)" \
+		"编译结果固定为一个 libmediaxx.dylib：ffmpeg 与 libmpv 编成静态库，由 mediaxx 合并" \
 		"-n             Do not build dependencies" \
 		"--clean        Clean build dirs before compiling" \
 		"--arch <arch>  Build for specified architecture (supported: armv7l, arm64, x86, x86_64)"
@@ -206,12 +205,19 @@ while [ $# -gt 0 ]; do
 		clean_mediaxx=1
 		rm -rf $source_dir/mediaxx/_build*
 		;;
+		--single-lib)
+		# 以前用它切换库形态，现在只有单库一种编译方式，参数留着只是为了不弄坏旧命令
+		echo "提示: --single-lib 已废弃，编译固定产出单个 libmediaxx.dylib" >&2
+		;;
 		*)
 		target=$1
 		;;
 	esac
 	shift
 done
+
+# 库形态固定：ffmpeg 与 libmpv 编成静态库，由 mediaxx 合并成单个 libmediaxx.dylib
+# （各个依赖的编译脚本 flavors/default.sh、scripts/mpv.sh、scripts/mediaxx.sh 都按这个前提写）
 
 if [ -z $arch ]; then
 	for sys in ${systems[@]}; do

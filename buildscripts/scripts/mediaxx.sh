@@ -45,6 +45,16 @@ else
 	extend_fw_arg="-framework AVFoundation -framework CoreAudio -framework Foundation -framework CoreFoundation "
 fi
 
+# libass 等 meson 依赖调用的是系统 iconv 的 iconv_open/iconv_close，
+# 而前缀里的 GNU libiconv 只导出 libiconv_*，两者符号名不同、必须都带上，
+# 这里显式把系统 libiconv 的 stub 作为链接输入补进来
+iconv_stub_arg=
+if [ -f "$sysroot_dir/usr/lib/libiconv.tbd" ]; then
+	iconv_stub_arg="$sysroot_dir/usr/lib/libiconv.tbd"
+else
+	echo "警告: 未找到 $sysroot_dir/usr/lib/libiconv.tbd，合并后可能缺少 iconv_open" >&2
+fi
+
 cpu=
 [[ "$cpu_triple" == "aarch64"* ]] && cpu=aarch64
 [[ "$cpu_triple" == "x86_64"* ]] && cpu=x86_64
@@ -59,7 +69,7 @@ LDFLAGS="$LDFLAGS $extend_fw_arg $default_ld_cxx_stdlib_mediaxx -lm" CFLAGS="$CF
     -DCMAKE_FIND_ROOT_PATH=${prefix_dir} \
     -DCMAKE_C_FLAGS="$CFLAGS -Wno-error=int-conversion ${cpuflags}" \
     -DCMAKE_CXX_FLAGS="$CXXFLAGS $extend_fw_arg " \
-    -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS $extend_fw_arg $default_ld_cxx_stdlib_mediaxx -lm" \
+    -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS $extend_fw_arg $iconv_stub_arg $default_ld_cxx_stdlib_mediaxx -lm" \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_LIBDIR=lib \
     -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON \

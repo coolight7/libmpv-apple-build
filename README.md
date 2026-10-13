@@ -18,6 +18,28 @@ pip3 install {需要的库}
 - 执行编译 ./bundle_default.sh
 - 编译结果在 ${项目根目录}/output/
 
+## 编译产物（单个 libmediaxx.dylib）
+- 编译方式固定：ffmpeg 编成静态库（`libav*.a`）、libmpv 编成静态库（`libmpv.a`），
+  再由 mediaxx 合并成一个动态库，不再有「多库 / 单库」的开关
+- 产物：`output/iOS/arm64/libmediaxx.dylib`、`output/Darwin/arm64/libmediaxx.dylib`
+    - 依赖只剩系统框架与 `/usr/lib/libiconv.2.dylib`
+    - 导出的符号是 `mediaxx_*` 与 `mpv_*`（当前 66 个，同时输出 `libmediaxx_def_syms.txt` 清单）
+- 手动编译：
+```sh
+cd ${项目根目录}/buildscripts/
+./build.sh --prebuild-rm-ffm-mpv-mediaxx   # 全量重编 ffmpeg + libmpv + mediaxx
+./build.sh --prebuild-rm-mediaxx           # 只重编 mediaxx
+./build.sh                                 # 按现有产物增量编译
+```
+- 编译完可以这样检查（`bundle_default.sh` 打包时会自动跑第一项）：
+```sh
+cd ${项目根目录}/buildscripts/
+./check-single-lib-symbols.sh      # 静态检查：合并后有没有会被错误解析的同名符号
+cd test/runtime-check && ./run.sh  # 运行时检查：读媒体信息 x40 + 播放并关闭 x20（只适用于 macOS 产物）
+```
+- 应用侧注意：`mpv_*` 在这个库里是导出符号，原来用 `DynamicLibrary.open('libmpv.2.dylib')`
+  加载 mpv 的地方要改成打开 `libmediaxx.dylib`，否则会找不到 mpv 接口
+
 ## 更新记录：ffmpeg 9.0.1 / mpv 分支 / 依赖库 / mediaxx
 - ffmpeg 由 `8.0.2` 更新到 `9.0.1`
     - 删除 `--disable-libshaderc`：ffmpeg 9 已移除该选项，留在 configure 里会直接以 "Unknown option" 退出
@@ -63,6 +85,18 @@ Compiling HB for LibreOffice on macOS results in the error "_LIBCPP_ENABLE_ASSER
     - 考虑动态链接 ffmpeg ，一开始我们把所有库都静态链接进 libmpv，整合得到 libmpv.2.dylib，但运行时出现上述错误，稳定崩溃。
     - 改为编译 ffmpeg 为动态库，libmpv也动态链接 libav*.dylib/libsw*.dylib 其他依赖库保持静态链接，这样就没问题了。
     - 另外 mediaxx 也是链接了 ffmpeg，没有调用 libmpv 的函数，也是只要跟 ffmpeg 静态链接整合到一起就崩溃，同样崩溃在close时，因此问题应该时在 ffmpeg 上
+    - 2026-10-13 补：改成固定单库编译之后，这个问题已经定位到具体原因并修掉
+        - ffmpeg 用 `--enable-lto=full` 编译成 LLVM bitcode，`libavcodec/apv_parser.c` 里有一个
+          `static av_cold void close(AVCodecParserContext *s)`，名字和系统 `close()` 相同
+        - 把所有静态库合并进一个 dylib 时，链接器解析 LTO 符号会把 `libavformat/file.c` 里
+          `close(fd)` 的调用错误地绑到这个 static 函数上，于是关闭文件时把文件描述符（3）
+          当结构体指针解引用，报 `EXC_BAD_ACCESS at 0x3`（崩溃点在 ffmpeg 的关闭流程，与上面记录一致）
+        - 之前把 ffmpeg 的 file.c 和 apv_parser.c 分到 libavformat.dylib / libavcodec.dylib 里，
+          不在同一个镜像，所以一直没暴露这个问题；当初改成动态链接 ffmpeg 正好绕过了它
+          （现在只有单库这一种编译方式，动态 ffmpeg 的做法不再使用）
+        - 处理办法：`patches/ffmpeg/rename-apv-parser-static-close.patch` 把这个 static 函数
+          改名成 `apv_parser_close`。合并时用 `buildscripts/check-single-lib-symbols.sh` 检查
+          「LTO 本地定义 + 未定义引用 + 没有外部定义」的名字，可以提前发现这类同名冲突
 - ios/libmpv 播放时崩溃
     - 崩溃点在 libmpv.2.dylib: AVAudioSession:
 ```sh

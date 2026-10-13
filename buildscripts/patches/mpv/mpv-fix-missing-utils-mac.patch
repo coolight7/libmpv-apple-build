@@ -1,0 +1,17 @@
+diff --git a/meson.build b/meson.build
+index 80bd39d..7d6b132 100644
+--- a/meson.build
++++ b/meson.build
+@@ -438,6 +438,12 @@ if features['cocoa']
+     main_fn_source = files('osdep/main-fn-mac.c')
+ endif
+ 
++if darwin and not features['cocoa']
++    # coreaudio / avfoundation 会调用 cfstr_get_cstr()，它定义在 osdep/utils-mac.c 中，
++    # 但上游只在 cocoa 打开时才编译该文件，cocoa 关闭时链接会留下未定义符号
++    sources += files('osdep/utils-mac.c')
++endif
++
+ if posix
+     if not get_option('fuzzers') and cc.has_function('fork', prefix : '#include <unistd.h>')
+         sources += files('osdep/subprocess-posix.c')

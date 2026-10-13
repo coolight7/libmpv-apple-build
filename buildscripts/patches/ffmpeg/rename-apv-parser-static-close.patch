@@ -1,0 +1,31 @@
+单库模式（把 ffmpeg / mpv / mediaxx 合并成一个 libmediaxx.dylib）链接时会出现符号重名：
+
+libavcodec 的 apv_parser.c 里有一个 static 函数叫 close()，而 libavformat/file.c 调用的是
+系统 close()，两者名字相同。ffmpeg 用 --enable-lto=full 编译成 LLVM bitcode 后，链接器
+在解析 LTO 符号时会把 file.c 里的 close() 引用绑到这个 static 函数上，于是关闭文件时把
+文件描述符（比如 3）当成结构体指针解引用，运行时报 EXC_BAD_ACCESS at 0x3 崩溃。
+
+把 apv_parser.c 里的这个 static 函数改名（close -> apv_parser_close）之后，close() 的引用
+重新走 libSystem（经 __stubs），单库模式运行正常。多库模式每个库单独成 dylib，file.c 与
+apv_parser.c 不在同一个镜像里，本来就不会互相影响，这个补丁对它没有副作用。
+
+diff --git a/libavcodec/apv_parser.c b/libavcodec/apv_parser.c
+index 3417bd7..abb8e6d 100644
+--- a/libavcodec/apv_parser.c
++++ b/libavcodec/apv_parser.c
+@@ -194,7 +194,7 @@ static av_cold int init(AVCodecParserContext *s)
+     return 0;
+ }
+ 
+-static av_cold void close(AVCodecParserContext *s)
++static av_cold void apv_parser_close(AVCodecParserContext *s)
+ {
+     APVParseContext *p = s->priv_data;
+     ParseContext *pc = &p->pc;
+@@ -209,5 +209,5 @@ const FFCodecParser ff_apv_parser = {
+     .priv_data_size = sizeof(APVParseContext),
+     .init           = init,
+     .parse          = parse,
+-    .close          = close,
++    .close          = apv_parser_close,
+ };
